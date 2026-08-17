@@ -10,7 +10,9 @@
  * the other.
  */
 
-export const SIGNALING_PORT = 58712;
+export const SIGNALING_PORT = 47989;
+export const MEDIA_PORT = 47998;
+export const DISCOVERY_PORT = 47999;
 
 export const DESKTOP_MODE_GAME_ID = "desktop";
 

@@ -2,7 +2,7 @@
 //!
 //! Independent of Sunshine/Moonlight:
 //! DXGI desktop duplication → H.264 via NVIDIA NVENC (`ffmpeg h264_nvenc`)
-//! when available, else `libx264`. Annex-B NAL units go out over custom UDP :58714 (LLU2).
+//! when available, else `libx264`. Annex-B NAL units go out over custom UDP :47998 (LLU2).
 
 #[cfg(windows)]
 mod audio;
@@ -19,7 +19,7 @@ pub use encode::EncoderBackend;
 pub use server::{MediaHub, MediaStats, MEDIA_PORT};
 
 #[cfg(not(windows))]
-pub const MEDIA_PORT: u16 = 58714;
+pub const MEDIA_PORT: u16 = 47998;
 
 #[cfg(not(windows))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]

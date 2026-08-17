@@ -107,8 +107,8 @@ export function PairingPage() {
               AlaveX Host 앱이 실행 중인 PC에 연결
             </h2>
             <p className="mt-1 text-center text-xs text-slate-500">
-              호스트 PC에서 AlaveX Host 앱을 실행하면 IP 주소와 PIN이 표시됩니다. 두 기기가 같은
-              LAN/Wi-Fi에 연결되어 있어야 합니다.
+              같은 LAN이면 IP를 자동 검색하거나 입력하세요. 밖에서 접속하려면 Host 앱에 공인
+              주소를 등록하고, 설정에서 「외부 연결」을 켠 뒤 공인 IP/DDNS로 페어링하세요.
             </p>
 
             {mixedContentBlocked && (
@@ -173,13 +173,13 @@ export function PairingPage() {
             <div className="mt-5 space-y-4 text-left">
               <div>
                 <label htmlFor="real-address" className="mb-1.5 block text-sm text-slate-300">
-                  호스트 IP 주소
+                  호스트 주소 (LAN IP 또는 공인 IP/DDNS)
                 </label>
                 <input
                   id="real-address"
                   value={realAddress}
                   onChange={(e) => setRealAddress(e.target.value)}
-                  placeholder="예: 192.168.0.42"
+                  placeholder="예: 192.168.0.42 또는 home.example.com"
                   className="w-full rounded-xl border border-base-600 bg-base-900 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-brand-500"
                 />
               </div>

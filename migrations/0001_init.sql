@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS devices (
   name TEXT NOT NULL,
   mac_address TEXT,
   last_ip TEXT,
-  signal_port INTEGER NOT NULL DEFAULT 58712,
+  signal_port INTEGER NOT NULL DEFAULT 47989,
   pairing_pin TEXT,
   last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
   created_at TEXT NOT NULL DEFAULT (datetime('now'))

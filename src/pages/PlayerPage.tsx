@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppState } from "@/state/AppStateContext";
 import { resolveGamesForDevice } from "@/utils/games";
+import { resolveHostAddress } from "@/utils/cloudDevices";
 import { SIGNALING_PORT } from "@/services/streaming/signalingProtocol";
 import { useStreamingSession } from "@/hooks/useStreamingSession";
 import { Logo } from "@/components/layout/Logo";
@@ -27,7 +28,7 @@ const statusText: Record<StreamSessionStatus, string> = {
 export function PlayerPage() {
   const { deviceId, gameId } = useParams<{ deviceId: string; gameId: string }>();
   const navigate = useNavigate();
-  const { getDevice, settings, realGamesByDevice } = useAppState();
+  const { getDevice, settings, realGamesByDevice, useRemoteConnection } = useAppState();
   const { status, stats, error, mediaRef, start, stop, retry, sendInput, sendGamepad } =
     useStreamingSession();
   const [showHud, setShowHud] = useState(true);
@@ -48,7 +49,7 @@ export function PlayerPage() {
         gameId: game.id,
         settings,
         realHost: {
-          address: device.address,
+          address: resolveHostAddress(device, useRemoteConnection),
           signalPort: device.signalPort ?? SIGNALING_PORT,
           pairingPin: device.pairingPin,
           clientName: detectClientPlatform() === "macos" ? "AlaveX Mac" : "AlaveX",

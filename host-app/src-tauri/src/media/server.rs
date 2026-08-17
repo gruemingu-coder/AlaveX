@@ -23,7 +23,7 @@ use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, Instant};
 
-pub const MEDIA_PORT: u16 = 58714;
+pub const MEDIA_PORT: u16 = 47998;
 
 const MAGIC: &[u8; 4] = b"LLU2";
 const TYPE_AUTH: u8 = 0x01;

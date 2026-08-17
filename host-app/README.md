@@ -14,7 +14,7 @@ Runs on the gaming PC you want to stream **from**. Built with
   with name / LAN IP / MAC / PIN) so a Streaming app on the same account
   can list it without retyping an IP/PIN.
 - Shows a 4-digit pairing PIN and this PC's role as a WebRTC signaling
-  endpoint (`ws://<this-pc-ip>:58712/signal`).
+  endpoint (`ws://<this-pc-ip>:47989/signal`).
 - Scans the local Steam library (via the Windows registry +
   `libraryfolders.vdf` / `appmanifest_*.acf` parsing) and lists fully
   installed games. No mock data — if Steam isn't installed, the list is
@@ -42,7 +42,7 @@ Runs on the gaming PC you want to stream **from**. Built with
   A manual "Steam 빅픽처 모드 실행" button remains available too.
 - Can also launch a selected Steam game via `steam://run/<appid>`.
 - Broadcasts a small UDP announcement every 2s (`discovery.rs`, port
-  58713) so the AlaveX Streaming *desktop* app can auto-discover this
+  47999) so the AlaveX Streaming *desktop* app can auto-discover this
   PC on the LAN instead of requiring a manually typed IP address. The
   announcement never includes the PIN.
 - Reports this PC's MAC address during pairing so the Streaming desktop
@@ -52,12 +52,12 @@ Runs on the gaming PC you want to stream **from**. Built with
 ## Architecture
 
 ```
-┌─────────────────────────────┐        LAN, ws://<host-ip>:58712/signal
+┌─────────────────────────────┐        LAN, ws://<host-ip>:47989/signal
 │  AlaveX Host App (Tauri)  │◄───────────────────────────────────────┐
 │                              │                                       │
 │  Rust (src-tauri/):          │  role=host                            │
 │   - signaling.rs: tiny WS    │◄──────────┐                           │
-│     relay on :58712          │           │                           │
+│     relay on :47989          │           │                           │
 │   - steam.rs: Steam scan      │           │      role=client&pin=XXXX│
 │   - input.rs: enigo injection │  Rust WS relay (pipes JSON frames)   │
 │                              │           │                           │

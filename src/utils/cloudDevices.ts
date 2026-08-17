@@ -14,12 +14,27 @@ function statusFromLastSeen(lastSeenAt: string): PcDevice["status"] {
   return age < HEARTBEAT_STALE_MS ? "online" : "offline";
 }
 
+/** Pick LAN or public host address for signaling + UDP media. */
+export function resolveHostAddress(
+  device: Pick<PcDevice, "address" | "lanAddress" | "publicHost">,
+  useRemoteConnection: boolean
+): string {
+  if (useRemoteConnection && device.publicHost?.trim()) {
+    return device.publicHost.trim();
+  }
+  return device.lanAddress?.trim() || device.address;
+}
+
 export function cloudDeviceToPcDevice(device: CloudDevice): PcDevice {
+  const lan = device.lastIp ?? "";
+  const publicHost = device.publicHost?.trim() || null;
   return {
     id: `${CLOUD_DEVICE_PREFIX}${device.id}`,
     name: device.name,
     platform: "windows",
-    address: device.lastIp ?? "",
+    lanAddress: lan,
+    publicHost,
+    address: lan,
     status: statusFromLastSeen(device.lastSeenAt),
     specs: { gpu: "확인 안 됨", cpu: "확인 안 됨", ramGb: 0 },
     pairedAt: device.lastSeenAt,

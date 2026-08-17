@@ -12,9 +12,9 @@ use std::net::UdpSocket;
 use std::sync::Arc;
 use std::time::Duration;
 
-/// Distinct from `SIGNALING_PORT` (58712). Kept in sync with the
-/// AlaveX Streaming app's `src-tauri/src/discovery.rs`.
-pub const DISCOVERY_PORT: u16 = 58713;
+/// Distinct from `SIGNALING_PORT` (47989). Sunshine audio UDP (47999).
+/// Kept in sync with the AlaveX Streaming app's `src-tauri/src/discovery.rs`.
+pub const DISCOVERY_PORT: u16 = 47999;
 
 pub async fn run(state: Arc<SignalingState>) {
     let Ok(socket) = UdpSocket::bind("0.0.0.0:0") else {

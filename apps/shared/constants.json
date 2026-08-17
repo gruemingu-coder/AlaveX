@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "https://alavex.pages.dev/api",
+  "signalingPort": 47989,
+  "mediaPort": 47998,
+  "discoveryPort": 47999,
+  "appVersion": "0.5.0"
+}

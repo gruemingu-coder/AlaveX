@@ -11,7 +11,7 @@ use std::net::UdpSocket;
 use std::time::{Duration, Instant};
 
 /// Kept in sync with `host-app/src-tauri/src/discovery.rs`.
-pub const DISCOVERY_PORT: u16 = 58713;
+pub const DISCOVERY_PORT: u16 = 47999;
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct DiscoveredHost {

@@ -45,6 +45,7 @@ interface DeviceRow {
   name: string;
   macAddress: string | null;
   lastIp: string | null;
+  publicHost: string | null;
   signalPort: number;
   pairingPin: string | null;
   lastSeenAt: string;
@@ -168,21 +169,26 @@ app.post("/api/devices", requireAuth, async (c) => {
   const now = new Date().toISOString();
   const macAddress = typeof body?.macAddress === "string" ? body.macAddress : null;
   const lastIp = typeof body?.lastIp === "string" ? body.lastIp : null;
-  const signalPort = typeof body?.signalPort === "number" ? body.signalPort : 58712;
+  const publicHost =
+    typeof body?.publicHost === "string" && body.publicHost.trim()
+      ? body.publicHost.trim()
+      : null;
+  const signalPort = typeof body?.signalPort === "number" ? body.signalPort : 47989;
   const pairingPin = typeof body?.pairingPin === "string" ? body.pairingPin : null;
 
   await c.env.DB.prepare(
-    `INSERT INTO devices (id, user_id, name, mac_address, last_ip, signal_port, pairing_pin, last_seen_at, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `INSERT INTO devices (id, user_id, name, mac_address, last_ip, public_host, signal_port, pairing_pin, last_seen_at, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(id) DO UPDATE SET
        name = excluded.name,
        mac_address = excluded.mac_address,
        last_ip = excluded.last_ip,
+       public_host = excluded.public_host,
        signal_port = excluded.signal_port,
        pairing_pin = excluded.pairing_pin,
        last_seen_at = excluded.last_seen_at`
   )
-    .bind(id, userId, name, macAddress, lastIp, signalPort, pairingPin, now, now)
+    .bind(id, userId, name, macAddress, lastIp, publicHost, signalPort, pairingPin, now, now)
     .run();
 
   return c.json({ ok: true });
@@ -191,8 +197,8 @@ app.post("/api/devices", requireAuth, async (c) => {
 app.get("/api/devices", requireAuth, async (c) => {
   const userId = c.get("userId");
   const { results } = await c.env.DB.prepare(
-    `SELECT id, name, mac_address as macAddress, last_ip as lastIp, signal_port as signalPort,
-            pairing_pin as pairingPin, last_seen_at as lastSeenAt
+    `SELECT id, name, mac_address as macAddress, last_ip as lastIp, public_host as publicHost,
+            signal_port as signalPort, pairing_pin as pairingPin, last_seen_at as lastSeenAt
      FROM devices WHERE user_id = ? ORDER BY last_seen_at DESC`
   )
     .bind(userId)

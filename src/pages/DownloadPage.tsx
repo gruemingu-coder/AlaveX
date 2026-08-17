@@ -52,10 +52,10 @@ const CLIENTS = [
     platform: "macOS",
     format: "DMG",
     name: "Streaming · Mac",
-    hint: "Apple Silicon / Intel Mac (빌드 준비 중)",
+    hint: "Apple Silicon Mac (M1/M2/M3/M4)",
     url: STREAMING_MAC_URL,
     fileName: "AlaveX-Streaming-macOS.dmg",
-    ready: false,
+    ready: true,
   },
   {
     key: "android",

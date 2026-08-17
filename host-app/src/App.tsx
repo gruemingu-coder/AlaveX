@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import {
   DESKTOP_MODE_GAME_ID,
+  MEDIA_PORT,
   SIGNALING_PORT,
   decodeSignalingMessage,
   encodeSignalingMessage,
@@ -24,6 +25,7 @@ interface InstalledGame {
 type ConnState = "starting" | "listening" | "active" | "relay-error";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
+const PUBLIC_HOST_STORAGE_KEY = "alavex-public-host";
 
 /** One native UDP session per client (DXGI + NVENC/libx264). */
 interface ClientSession {
@@ -71,6 +73,10 @@ export function App() {
     | { status: "error"; message: string }
     | null
   >(null);
+  const [localIp, setLocalIp] = useState<string | null>(null);
+  const [publicHost, setPublicHost] = useState(() =>
+    typeof window !== "undefined" ? window.localStorage.getItem(PUBLIC_HOST_STORAGE_KEY) ?? "" : ""
+  );
 
   const wsRef = useRef<WebSocket | null>(null);
   const sessionsRef = useRef<Map<string, ClientSession>>(new Map());
@@ -82,6 +88,17 @@ export function App() {
   useEffect(() => {
     pinRef.current = pin;
   }, [pin]);
+
+  const publicHostRef = useRef(publicHost);
+  useEffect(() => {
+    publicHostRef.current = publicHost;
+  }, [publicHost]);
+
+  useEffect(() => {
+    void invoke<{ localIp: string | null }>("get_device_info").then((info) => {
+      setLocalIp(info.localIp);
+    });
+  }, []);
 
   useEffect(() => {
     if (!token) return;
@@ -101,6 +118,7 @@ export function App() {
           name: info.name,
           macAddress: info.macAddress,
           lastIp: info.localIp,
+          publicHost: publicHostRef.current.trim() || null,
           signalPort: info.signalPort,
           pairingPin: pinRef.current,
         });
@@ -188,7 +206,7 @@ export function App() {
           ws.send(
             encodeSignalingMessage({
               type: "stream-ready",
-              mediaPort: 58714,
+              mediaPort: MEDIA_PORT,
               captureBackend: backend === "nvenc" ? "nvenc" : "software",
               clientId,
             })
@@ -413,6 +431,45 @@ export function App() {
         >
           {isRegenerating ? "재생성 중..." : "PIN 재생성"}
         </button>
+      </section>
+
+      <section className="rounded-2xl border border-base-700 bg-base-900 p-5 text-left">
+        <p className="text-xs uppercase tracking-wide text-slate-500">네트워크 · 포트 포워딩</p>
+        <dl className="mt-3 space-y-2 text-sm">
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-500">LAN IP</dt>
+            <dd className="font-mono text-slate-200">{localIp ?? "확인 중..."}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-500">시그널링</dt>
+            <dd className="font-mono text-slate-200">TCP {SIGNALING_PORT}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-slate-500">미디어 (LLU2)</dt>
+            <dd className="font-mono text-slate-200">UDP {MEDIA_PORT}</dd>
+          </div>
+        </dl>
+        <p className="mt-3 text-xs leading-relaxed text-slate-500">
+          Sunshine과 같은 포트 범위(TCP 47984–47990, UDP 47998–48010)를 공유기에서 이 PC로
+          포워딩하면 밖에서도 접속할 수 있습니다. Windows 방화벽에서도 인바운드를 허용해야 합니다.
+        </p>
+        <label htmlFor="public-host" className="mt-4 block text-xs font-medium text-slate-400">
+          공인 IP 또는 DDNS (선택)
+        </label>
+        <input
+          id="public-host"
+          value={publicHost}
+          onChange={(e) => {
+            const value = e.target.value;
+            setPublicHost(value);
+            window.localStorage.setItem(PUBLIC_HOST_STORAGE_KEY, value);
+          }}
+          placeholder="예: 203.0.113.10 또는 mypc.example.com"
+          className="mt-1.5 w-full rounded-xl border border-base-600 bg-base-950 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-brand-500"
+        />
+        <p className="mt-2 text-[11px] leading-relaxed text-warn-400/90">
+          ws:// 시그널링 + PIN만으로 보호됩니다. 인터넷에 포트를 열기 전에 보안 위험을 이해하세요.
+        </p>
       </section>
 
       <section className="rounded-2xl border border-base-700 bg-base-900 p-5">

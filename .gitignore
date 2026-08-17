@@ -29,3 +29,18 @@ host-app/dist
 # default template .gitignore).
 gen/schemas
 .git_log_tmp.txt
+
+# Local host agent state (pairing tokens)
+host-agent/data/
+
+# Env / secrets
+.env
+.env.*
+
+# Build artifacts / installers (CI publishes to public/downloads/)
+apps/apple/.build/
+releases/macos/
+releases/ios/
+build-*.log
+public/downloads/AlaveX-Streaming-macOS.dmg
+FETCH_HEAD

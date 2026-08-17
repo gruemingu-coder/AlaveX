@@ -19,6 +19,9 @@ interface AppState {
 }
 
 interface AppStateContextValue extends AppState {
+  /** When true, connect via publicHost (port forwarding) instead of LAN IP. */
+  useRemoteConnection: boolean;
+  setUseRemoteConnection: (value: boolean) => void;
   addDevice: (device: PcDevice) => void;
   removeDevice: (deviceId: string) => void;
   updateDeviceStatus: (deviceId: string, status: PcDevice["status"]) => void;
@@ -38,6 +41,7 @@ const AppStateContext = createContext<AppStateContextValue | null>(null);
 const DEVICES_KEY = "devices";
 const SETTINGS_KEY = "settings";
 const REAL_GAMES_KEY = "realGames";
+const REMOTE_CONNECTION_KEY = "useRemoteConnection";
 
 const REAL_GAME_COVER_GRADIENTS = [
   "from-brand-600 via-brand-500 to-accent-400",
@@ -71,6 +75,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const [realGamesByDevice, setRealGamesByDevice] = useState<Record<string, Game[]>>(() =>
     loadFromStorage(REAL_GAMES_KEY, {})
   );
+  const [useRemoteConnection, setUseRemoteConnection] = useState<boolean>(() =>
+    loadFromStorage(REMOTE_CONNECTION_KEY, false)
+  );
 
   useEffect(() => {
     saveToStorage(DEVICES_KEY, devices);
@@ -83,6 +90,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     saveToStorage(REAL_GAMES_KEY, realGamesByDevice);
   }, [realGamesByDevice]);
+
+  useEffect(() => {
+    saveToStorage(REMOTE_CONNECTION_KEY, useRemoteConnection);
+  }, [useRemoteConnection]);
 
   const addDevice = useCallback((device: PcDevice) => {
     setDevices((prev) => {
@@ -144,6 +155,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       devices,
       settings,
       realGamesByDevice,
+      useRemoteConnection,
+      setUseRemoteConnection,
       addDevice,
       removeDevice,
       updateDeviceStatus,
@@ -158,6 +171,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       devices,
       settings,
       realGamesByDevice,
+      useRemoteConnection,
       addDevice,
       removeDevice,
       updateDeviceStatus,

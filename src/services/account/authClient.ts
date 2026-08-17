@@ -90,6 +90,8 @@ export interface CloudDevicePayload {
   name: string;
   macAddress?: string | null;
   lastIp?: string | null;
+  /** Public IP or DDNS hostname for port-forwarded remote access. */
+  publicHost?: string | null;
   signalPort?: number;
   pairingPin?: string | null;
 }
@@ -99,6 +101,7 @@ export interface CloudDevice {
   name: string;
   macAddress: string | null;
   lastIp: string | null;
+  publicHost: string | null;
   signalPort: number;
   pairingPin: string | null;
   lastSeenAt: string;

@@ -21,7 +21,7 @@ use tokio::sync::mpsc;
 use crate::network::primary_mac_address;
 use crate::state::{self, SignalingState};
 
-pub const SIGNALING_PORT: u16 = 58712;
+pub const SIGNALING_PORT: u16 = 47989;
 
 pub async fn run(state: Arc<SignalingState>) {
     let app = Router::new()

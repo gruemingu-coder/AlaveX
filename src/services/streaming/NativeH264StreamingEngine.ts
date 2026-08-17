@@ -1,7 +1,7 @@
 /**
  * AlaveX native H.264 streaming client.
  *
- * Host: DXGI → ffmpeg h264_nvenc/libx264 → UDP :58714 (LLU2)
+ * Host: DXGI → ffmpeg h264_nvenc/libx264 → UDP :47998 (LLU2)
  * Client: Tauri UDP bridge → WebCodecs VideoDecoder → canvas → <video>
  *
  * Independent of Sunshine/Moonlight protocols.
@@ -17,6 +17,7 @@ import type { InputForwardEvent, StreamingEngine, Unsubscribe } from "./Streamin
 import {
   decodeSignalingMessage,
   encodeSignalingMessage,
+  MEDIA_PORT,
   type GamepadStateWire,
   type RemoteGameSummary,
   type RemoteQualitySettings,
@@ -31,7 +32,6 @@ import type {
 import { isBlockedByMixedContent, MIXED_CONTENT_ERROR_MESSAGE } from "@/utils/platform";
 
 const AUTH_TIMEOUT_MS = 8000;
-const DEFAULT_MEDIA_PORT = 58714;
 
 export class NativeH264StreamingEngine implements StreamingEngine {
   private ws: WebSocket | null = null;
@@ -45,7 +45,7 @@ export class NativeH264StreamingEngine implements StreamingEngine {
   private settings: StreamSettings | null = null;
   private gameId: string | null = null;
   private realHost: RealHostConnectInfo | null = null;
-  private mediaPort = DEFAULT_MEDIA_PORT;
+  private mediaPort = MEDIA_PORT;
   private mediaToken: string | null = null;
   private captureBackend: "nvenc" | "software" = "software";
   private unlistenStats: (() => void) | null = null;

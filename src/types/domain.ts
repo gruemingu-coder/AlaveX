@@ -24,8 +24,15 @@ export interface PcDevice {
   name: string;
   platform: DevicePlatform;
   /**
-   * The actual IPv4 address of a machine running the AlaveX Host App,
-   * used to open a WebSocket connection to its signaling relay.
+   * Public IP or DDNS hostname for port-forwarded remote play. When set,
+   * streaming clients can connect from outside the LAN (see settings).
+   */
+  publicHost?: string | null;
+  /** LAN IPv4 from cloud sync or manual pairing. */
+  lanAddress?: string;
+  /**
+   * Address used for WebSocket/UDP connections (LAN or public host,
+   * depending on client connection mode).
    */
   address: string;
   status: DeviceStatus;

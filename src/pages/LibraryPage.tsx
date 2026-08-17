@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppState } from "@/state/AppStateContext";
+import { resolveHostAddress } from "@/utils/cloudDevices";
 import { resolveGamesForDevice } from "@/utils/games";
 import { connectToRealHost } from "@/services/pairing/realHostClient";
 import { SIGNALING_PORT } from "@/services/streaming/signalingProtocol";
@@ -72,7 +73,7 @@ function DeviceLibrary({
   device: PcDevice | undefined;
 }) {
   const navigate = useNavigate();
-  const { realGamesByDevice, setRealGames } = useAppState();
+  const { realGamesByDevice, setRealGames, useRemoteConnection } = useAppState();
   const [isLoading, setIsLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
@@ -101,7 +102,7 @@ function DeviceLibrary({
     setRefreshError(null);
     try {
       const result = await connectToRealHost(
-        device.address,
+        resolveHostAddress(device, useRemoteConnection),
         device.pairingPin,
         "AlaveX Web",
         device.signalPort ?? SIGNALING_PORT

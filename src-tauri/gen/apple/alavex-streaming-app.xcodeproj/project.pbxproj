@@ -1,0 +1,466 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		17FF9D049BA476063E0596FC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C197AAE74690C5899AB94D16 /* LaunchScreen.storyboard */; };
+		251888ABC3419E6114485CFF /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62241B82B6ADEE5D2BB6E4FC /* UIKit.framework */; };
+		4FE2B9FF55AB9572D15ABEF5 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C9BA664AC5CA0177F7FE785 /* CoreGraphics.framework */; };
+		586968D7345265E178416E45 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 340C6BF866D8A0F5916F71AA /* Metal.framework */; };
+		5C502F50AABFB7D9B2246A24 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 54C859544FFF9EED48961FB1 /* Assets.xcassets */; };
+		62CE6F995FA0705278E61CCA /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE2E9A043BFF0CEC2D0A0D1 /* Security.framework */; };
+		65F22185E240EE4EB076507A /* libapp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5706478D142F6521D8D0BCEE /* libapp.a */; };
+		7516B42C7D4C1BD2080583D2 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 506CD2332FCD48A928EC2599 /* QuartzCore.framework */; };
+		8A53E05ABF61C22E8E2F51F4 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0432DB5EDA01F139D7777623 /* MetalKit.framework */; };
+		A1672EB4541FF9FBBB461464 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A78C36E0DE8C873A2697686 /* WebKit.framework */; };
+		D9E956D46C8F63E0D9556035 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8699AE9CD096B5885661A421 /* main.mm */; };
+		E9E700327B4B97CA68126547 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 91D149C9CD944E1FB2CD3F41 /* assets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0432DB5EDA01F139D7777623 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		0C9BA664AC5CA0177F7FE785 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		0E62CE1054D9950565E9F100 /* media_client.rs */ = {isa = PBXFileReference; path = media_client.rs; sourceTree = "<group>"; };
+		2A78C36E0DE8C873A2697686 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		340C6BF866D8A0F5916F71AA /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		3CEBA31B037556747D1B06EF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		4EE2E9A043BFF0CEC2D0A0D1 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		506CD2332FCD48A928EC2599 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		54C859544FFF9EED48961FB1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		550EDB4A086FC2FBF4ADF727 /* main.rs */ = {isa = PBXFileReference; path = main.rs; sourceTree = "<group>"; };
+		5706478D142F6521D8D0BCEE /* libapp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libapp.a; sourceTree = "<group>"; };
+		62241B82B6ADEE5D2BB6E4FC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		844026A1EE39521DBC365706 /* lib.rs */ = {isa = PBXFileReference; path = lib.rs; sourceTree = "<group>"; };
+		844A1540B75BE3D4F3EA94FF /* alavex-streaming-app_iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "alavex-streaming-app_iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8699AE9CD096B5885661A421 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
+		91D149C9CD944E1FB2CD3F41 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = SOURCE_ROOT; };
+		A15D6FCF5C0DFAC20CC1AE08 /* discovery.rs */ = {isa = PBXFileReference; path = discovery.rs; sourceTree = "<group>"; };
+		A19EF2A5BEE81D8B7E3C5915 /* wol.rs */ = {isa = PBXFileReference; path = wol.rs; sourceTree = "<group>"; };
+		C197AAE74690C5899AB94D16 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		DF81AAF7773847F9B4B54B8F /* alavex-streaming-app_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "alavex-streaming-app_iOS.entitlements"; sourceTree = "<group>"; };
+		E2C911D1C80271B9AE972055 /* bindings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bindings.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E5031A6D02E92803065DA207 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				65F22185E240EE4EB076507A /* libapp.a in Frameworks */,
+				4FE2B9FF55AB9572D15ABEF5 /* CoreGraphics.framework in Frameworks */,
+				586968D7345265E178416E45 /* Metal.framework in Frameworks */,
+				8A53E05ABF61C22E8E2F51F4 /* MetalKit.framework in Frameworks */,
+				7516B42C7D4C1BD2080583D2 /* QuartzCore.framework in Frameworks */,
+				62CE6F995FA0705278E61CCA /* Security.framework in Frameworks */,
+				251888ABC3419E6114485CFF /* UIKit.framework in Frameworks */,
+				A1672EB4541FF9FBBB461464 /* WebKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		02203A42786085BA0BC3CE73 /* bindings */ = {
+			isa = PBXGroup;
+			children = (
+				E2C911D1C80271B9AE972055 /* bindings.h */,
+			);
+			path = bindings;
+			sourceTree = "<group>";
+		};
+		3D20B9923674CA00990B6079 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				D11FB2FE0EE947EEE610481D /* alavex-streaming-app */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		8422BB8CD401D88E6F4055D9 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0C9BA664AC5CA0177F7FE785 /* CoreGraphics.framework */,
+				5706478D142F6521D8D0BCEE /* libapp.a */,
+				340C6BF866D8A0F5916F71AA /* Metal.framework */,
+				0432DB5EDA01F139D7777623 /* MetalKit.framework */,
+				506CD2332FCD48A928EC2599 /* QuartzCore.framework */,
+				4EE2E9A043BFF0CEC2D0A0D1 /* Security.framework */,
+				62241B82B6ADEE5D2BB6E4FC /* UIKit.framework */,
+				2A78C36E0DE8C873A2697686 /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8D1319D4F4287D4C4E8853C8 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				A15D6FCF5C0DFAC20CC1AE08 /* discovery.rs */,
+				844026A1EE39521DBC365706 /* lib.rs */,
+				550EDB4A086FC2FBF4ADF727 /* main.rs */,
+				0E62CE1054D9950565E9F100 /* media_client.rs */,
+				A19EF2A5BEE81D8B7E3C5915 /* wol.rs */,
+			);
+			name = src;
+			path = ../../src;
+			sourceTree = "<group>";
+		};
+		8D13782EAC4A31BBF3B93792 = {
+			isa = PBXGroup;
+			children = (
+				91D149C9CD944E1FB2CD3F41 /* assets */,
+				54C859544FFF9EED48961FB1 /* Assets.xcassets */,
+				C197AAE74690C5899AB94D16 /* LaunchScreen.storyboard */,
+				CF721426638BD36EC12B0126 /* alavex-streaming-app_iOS */,
+				ABA93D544E15FE43FD482E2E /* Externals */,
+				3D20B9923674CA00990B6079 /* Sources */,
+				8D1319D4F4287D4C4E8853C8 /* src */,
+				8422BB8CD401D88E6F4055D9 /* Frameworks */,
+				E2206AC4F1DDD42CB8201671 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ABA93D544E15FE43FD482E2E /* Externals */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Externals;
+			sourceTree = "<group>";
+		};
+		CF721426638BD36EC12B0126 /* alavex-streaming-app_iOS */ = {
+			isa = PBXGroup;
+			children = (
+				DF81AAF7773847F9B4B54B8F /* alavex-streaming-app_iOS.entitlements */,
+				3CEBA31B037556747D1B06EF /* Info.plist */,
+			);
+			path = "alavex-streaming-app_iOS";
+			sourceTree = "<group>";
+		};
+		D11FB2FE0EE947EEE610481D /* alavex-streaming-app */ = {
+			isa = PBXGroup;
+			children = (
+				8699AE9CD096B5885661A421 /* main.mm */,
+				02203A42786085BA0BC3CE73 /* bindings */,
+			);
+			path = "alavex-streaming-app";
+			sourceTree = "<group>";
+		};
+		E2206AC4F1DDD42CB8201671 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				844A1540B75BE3D4F3EA94FF /* alavex-streaming-app_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		034BFC06FDC7DA81156D20F6 /* alavex-streaming-app_iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 991BCAF6D5EAD7E9F5C1F61B /* Build configuration list for PBXNativeTarget "alavex-streaming-app_iOS" */;
+			buildPhases = (
+				F03347BE0FF7712DC92CC822 /* Build Rust Code */,
+				202ACC949E9CADCEF811C7FB /* Sources */,
+				429DFA07590BDB787C9E872F /* Resources */,
+				E5031A6D02E92803065DA207 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "alavex-streaming-app_iOS";
+			packageProductDependencies = (
+			);
+			productName = "alavex-streaming-app_iOS";
+			productReference = 844A1540B75BE3D4F3EA94FF /* alavex-streaming-app_iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7E36E3A36CA490F8A7758CA6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 4BD1C527C37C83E84DC9C228 /* Build configuration list for PBXProject "alavex-streaming-app" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8D13782EAC4A31BBF3B93792;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = E2206AC4F1DDD42CB8201671 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				034BFC06FDC7DA81156D20F6 /* alavex-streaming-app_iOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		429DFA07590BDB787C9E872F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5C502F50AABFB7D9B2246A24 /* Assets.xcassets in Resources */,
+				17FF9D049BA476063E0596FC /* LaunchScreen.storyboard in Resources */,
+				E9E700327B4B97CA68126547 /* assets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F03347BE0FF7712DC92CC822 /* Build Rust Code */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Build Rust Code";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(SRCROOT)/Externals/x86_64/${CONFIGURATION}/libapp.a",
+				"$(SRCROOT)/Externals/arm64/${CONFIGURATION}/libapp.a",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "npm run -- tauri ios xcode-script -v --platform ${PLATFORM_DISPLAY_NAME:?} --sdk-root ${SDKROOT:?} --framework-search-paths \"${FRAMEWORK_SEARCH_PATHS:?}\" --header-search-paths \"${HEADER_SEARCH_PATHS:?}\" --gcc-preprocessor-definitions \"${GCC_PREPROCESSOR_DEFINITIONS:-}\" --configuration ${CONFIGURATION:?} 0 ${ARCHS:?}";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		202ACC949E9CADCEF811C7FB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D9E956D46C8F63E0D9556035 /* main.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		295FEDFBF998ED10C42E8B81 /* release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = release;
+		};
+		913C86BE317D9313486053C1 /* debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = debug;
+		};
+		B68376DD97B0C0F815A14608 /* release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					arm64,
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "alavex-streaming-app_iOS/alavex-streaming-app_iOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\".\"",
+				);
+				INFOPLIST_FILE = "alavex-streaming-app_iOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=arm64]" = "$(inherited) $(PROJECT_DIR)/Externals/arm64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				"LIBRARY_SEARCH_PATHS[arch=x86_64]" = "$(inherited) $(PROJECT_DIR)/Externals/x86_64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.alavex.streamingapp;
+				PRODUCT_NAME = "AlaveX";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
+			};
+			name = release;
+		};
+		E64504BA9D3733F582A81B4B /* debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ARCHS = (
+					arm64,
+				);
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "alavex-streaming-app_iOS/alavex-streaming-app_iOS.entitlements";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_BITCODE = NO;
+				"EXCLUDED_ARCHS[sdk=iphoneos*]" = x86_64;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\".\"",
+				);
+				INFOPLIST_FILE = "alavex-streaming-app_iOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				"LIBRARY_SEARCH_PATHS[arch=arm64]" = "$(inherited) $(PROJECT_DIR)/Externals/arm64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				"LIBRARY_SEARCH_PATHS[arch=x86_64]" = "$(inherited) $(PROJECT_DIR)/Externals/x86_64/$(CONFIGURATION) $(SDKROOT)/usr/lib/swift $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/$(PLATFORM_NAME) $(DEVELOPER_DIR)/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-5.0/$(PLATFORM_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.alavex.streamingapp;
+				PRODUCT_NAME = "AlaveX";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
+			};
+			name = debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4BD1C527C37C83E84DC9C228 /* Build configuration list for PBXProject "alavex-streaming-app" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				913C86BE317D9313486053C1 /* debug */,
+				295FEDFBF998ED10C42E8B81 /* release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = debug;
+		};
+		991BCAF6D5EAD7E9F5C1F61B /* Build configuration list for PBXNativeTarget "alavex-streaming-app_iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E64504BA9D3733F582A81B4B /* debug */,
+				B68376DD97B0C0F815A14608 /* release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7E36E3A36CA490F8A7758CA6 /* Project object */;
+}

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Toggle } from "@/components/ui/Toggle";
 import { Select } from "@/components/ui/Select";
 import { Badge } from "@/components/ui/Badge";
+import { SIGNALING_PORT, MEDIA_PORT, DISCOVERY_PORT } from "@/services/streaming/signalingProtocol";
 
 const resolutionOptions: { value: StreamResolution; label: string }[] = [
   { value: "720p", label: "720p (HD)" },
@@ -37,7 +38,7 @@ const streamStartActionOptions: { value: StreamStartAction; label: string }[] = 
 ];
 
 export function SettingsPage() {
-  const { settings, updateSettings, resetSettings, devices, renameDevice } = useAppState();
+  const { settings, updateSettings, resetSettings, devices, renameDevice, useRemoteConnection, setUseRemoteConnection } = useAppState();
   const { user, logout } = useAuth();
   const { theme, setTheme, options: themeOptions } = useTheme();
   const [savedFlash, setSavedFlash] = useState(false);
@@ -84,6 +85,43 @@ export function SettingsPage() {
             </Button>
           </Card>
         )}
+
+        <Card className="p-5">
+          <h2 className="mb-1 text-sm font-semibold text-slate-200">원격 연결 (포트 포워딩)</h2>
+          <p className="mb-3 text-xs text-slate-500">
+            집 밖에서 접속할 때 사용합니다. 호스트 PC 공유기에서 아래 포트를 PC로 포워딩하고, Host
+            앱에 공인 IP 또는 DDNS 주소를 등록하세요.
+          </p>
+          <p className="mb-3 text-xs text-slate-500">
+            Sunshine과 동일한 포트 범위입니다. 공유기에서 아래를 PC로 포워딩하면 됩니다.
+          </p>
+          <ul className="mb-4 space-y-1 text-xs text-slate-400">
+            <li>
+              · TCP <span className="font-mono text-slate-300">47984–47990</span> (시그널링{" "}
+              {SIGNALING_PORT})
+            </li>
+            <li>
+              · UDP <span className="font-mono text-slate-300">47998–48010</span> (영상{" "}
+              {MEDIA_PORT})
+            </li>
+            <li>
+              · LAN 검색 UDP <span className="font-mono text-slate-300">{DISCOVERY_PORT}</span>{" "}
+              (같은 Wi‑Fi만)
+            </li>
+          </ul>
+          <Toggle
+            checked={useRemoteConnection}
+            onChange={(checked) => {
+              setUseRemoteConnection(checked);
+              flashSaved();
+            }}
+            label="외부(공인 IP/DDNS) 주소로 연결"
+          />
+          <p className="mt-3 text-xs leading-relaxed text-warn-400/90">
+            보안 참고: 시그널링은 암호화되지 않은 ws:// 이고 PIN 인증만 있습니다. 포트를 열면
+            인터넷에 노출됩니다. 신뢰할 수 있는 네트워크·강한 PIN·가능하면 VPN 사용을 권장합니다.
+          </p>
+        </Card>
 
         <Card className="p-5">
           <h2 className="mb-1 text-sm font-semibold text-slate-200">디자인 테마</h2>

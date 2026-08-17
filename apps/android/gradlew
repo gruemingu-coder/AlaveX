@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Minimal Gradle wrapper bootstrap. Android Studio will regenerate a full wrapper.
+# Usage: ./gradlew assembleDebug
+#
+set -eu
+DIR="$(cd "$(dirname "$0")" && pwd)"
+PROPS="$DIR/gradle/wrapper/gradle-wrapper.properties"
+GRADLE_VERSION="$(grep distributionUrl "$PROPS" | sed 's/.*gradle-\([0-9.]*\)-.*/\1/')"
+GRADLE_HOME="${GRADLE_USER_HOME:-$HOME/.gradle}/wrapper/dists/gradle-${GRADLE_VERSION}-bin"
+if [ ! -d "$GRADLE_HOME" ]; then
+  echo "Gradle $GRADLE_VERSION not cached. Open apps/android in Android Studio or install Gradle, then run:"
+  echo "  gradle wrapper --gradle-version $GRADLE_VERSION"
+  exit 1
+fi
+BIN="$(find "$GRADLE_HOME" -type f -name gradle -path '*/bin/gradle' 2>/dev/null | head -1)"
+if [ -z "$BIN" ]; then
+  echo "Gradle wrapper cache missing. Use Android Studio: File → Open → apps/android"
+  exit 1
+fi
+exec "$BIN" -p "$DIR" "$@"

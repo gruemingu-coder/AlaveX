@@ -6,13 +6,19 @@
  * Native path (preferred):
  *  - Client sends `start-stream` after `auth-ok`
  *  - Host starts DXGI+NVENC capture and replies `stream-ready`
- *  - Client opens UDP media port (default 58714, LLU2) via Tauri bridge
+ *  - Client opens UDP media port (default 47998, LLU2) via Tauri bridge
  *  - Input rides the signaling WebSocket as `input` messages
  *
- * Legacy WebRTC path (`offer`/`answer`/`ice`) remains for older clients.
+ * Port numbers match Sunshine defaults (base 47989) so the same router
+ * port-forward rules work: TCP 47984–47990, UDP 47998–48010.
  */
 
-export const SIGNALING_PORT = 58712;
+/** Sunshine HTTP/base port — AlaveX WebSocket signaling (TCP). */
+export const SIGNALING_PORT = 47989;
+/** Sunshine video stream port — LLU2 H.264/audio (UDP). */
+export const MEDIA_PORT = 47998;
+/** Sunshine audio port — LAN discovery broadcast (UDP, LAN only). */
+export const DISCOVERY_PORT = 47999;
 
 export interface IceCandidateInit {
   candidate: string;

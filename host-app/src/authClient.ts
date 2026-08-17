@@ -86,6 +86,7 @@ export interface CloudDevicePayload {
   name: string;
   macAddress?: string | null;
   lastIp?: string | null;
+  publicHost?: string | null;
   signalPort?: number;
   pairingPin?: string | null;
 }
