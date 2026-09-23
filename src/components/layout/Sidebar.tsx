@@ -49,32 +49,40 @@ const navItems: NavItem[] = [
 
 interface SidebarProps {
   onNavigate?: () => void;
+  layout?: "stack" | "bar";
 }
 
-export function Sidebar({ onNavigate }: SidebarProps) {
+export function Sidebar({ onNavigate, layout = "stack" }: SidebarProps) {
   const { devices } = useAppState();
   const onlineCount = devices.filter((d) => d.status === "online").length;
+  const bar = layout === "bar";
 
   return (
     <nav
       aria-label="주요 메뉴"
-      className="flex h-full w-full flex-col justify-between bg-base-900 px-4 py-5"
+      className={
+        bar
+          ? "flex items-center gap-1"
+          : "flex h-full w-full flex-col justify-between bg-base-950 px-4 py-5"
+      }
     >
-      <div>
-        <Link to="/app/devices" className="mb-8 flex items-center px-2">
-          <Logo size="sm" />
-        </Link>
-        <ul className="flex flex-col gap-1">
+      <div className={bar ? "contents" : undefined}>
+        {!bar && (
+          <Link to="/app/devices" className="mb-8 flex items-center px-2" onClick={onNavigate}>
+            <Logo size="sm" />
+          </Link>
+        )}
+        <ul className={bar ? "flex items-center gap-1" : "flex flex-col gap-1"}>
           {navItems.map((item) => (
             <li key={item.to}>
               <NavLink
                 to={item.to}
                 onClick={onNavigate}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                  `flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? "bg-brand-600/15 text-brand-300 ring-1 ring-inset ring-brand-500/40"
-                      : "text-slate-400 hover:bg-base-800 hover:text-slate-100"
+                      ? "border-b-2 border-brand-500 text-heading"
+                      : "border-b-2 border-transparent text-slate-400 hover:text-heading"
                   }`
                 }
               >
@@ -86,16 +94,18 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         </ul>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <div className="rounded-xl border border-base-700 bg-base-850 px-3 py-3">
-          <p className="text-xs font-medium text-slate-400">페어링된 PC</p>
-          <p className="mt-1 text-sm text-slate-200">
-            <span className="font-semibold text-accent-400">{onlineCount}</span>
-            <span className="text-slate-500"> / {devices.length}대 온라인</span>
-          </p>
+      {!bar && (
+        <div className="flex flex-col gap-3">
+          <div className="border border-base-700 px-3 py-3">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-slate-500">페어링된 PC</p>
+            <p className="mt-1 text-sm text-slate-200">
+              <span className="font-semibold text-accent-400">{onlineCount}</span>
+              <span className="text-slate-500"> / {devices.length}대 온라인</span>
+            </p>
+          </div>
+          <ThemeSwitcher className="justify-center" />
         </div>
-        <ThemeSwitcher className="justify-center" />
-      </div>
+      )}
     </nav>
   );
 }

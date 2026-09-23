@@ -47,7 +47,7 @@ export class NativeH264StreamingEngine implements StreamingEngine {
   private realHost: RealHostConnectInfo | null = null;
   private mediaPort = MEDIA_PORT;
   private mediaToken: string | null = null;
-  private captureBackend: "nvenc" | "software" = "software";
+  private captureBackend: "nvenc" | "videotoolbox" | "software" = "software";
   private unlistenStats: (() => void) | null = null;
   private lastRttMs = 0;
   private lastLossPct = 0;
@@ -170,7 +170,11 @@ export class NativeH264StreamingEngine implements StreamingEngine {
             if (typeof msg.mediaToken === "string" && msg.mediaToken) {
               this.mediaToken = msg.mediaToken;
             }
-            if (msg.captureBackend === "nvenc" || msg.captureBackend === "software") {
+            if (
+              msg.captureBackend === "nvenc" ||
+              msg.captureBackend === "videotoolbox" ||
+              msg.captureBackend === "software"
+            ) {
               this.captureBackend = msg.captureBackend;
             }
             settleResolve();
@@ -607,7 +611,7 @@ export class NativeH264StreamingEngine implements StreamingEngine {
       bitrateMbps: Math.round(bitrateMbps * 10) / 10,
       packetLossPct: this.lastLossPct,
       resolution: this.settings?.resolution ?? "1080p",
-      decoder: this.captureBackend === "nvenc" ? "hardware" : "software",
+      decoder: this.captureBackend === "software" ? "software" : "hardware",
     };
     this.statsListeners.forEach((cb) => cb(stats));
   }

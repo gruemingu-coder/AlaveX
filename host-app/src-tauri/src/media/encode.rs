@@ -1,4 +1,5 @@
-//! H.264 via ffmpeg: prefer `h264_nvenc`, else `libx264`.
+//! H.264 via ffmpeg.
+//! Windows prefers `h264_nvenc`, macOS prefers `h264_videotoolbox`, else `libx264`.
 
 use std::io::{Read, Write};
 use std::process::{Child, ChildStdin, ChildStdout, Command, Stdio};
@@ -25,6 +26,23 @@ fn ffmpeg_command() -> Command {
 #[serde(rename_all = "lowercase")]
 pub enum EncoderBackend {
     Nvenc,
+    Videotoolbox,
+    Software,
+}
+
+impl EncoderBackend {
+    pub fn wire_name(self) -> &'static str {
+        match self {
+            Self::Nvenc => "nvenc",
+            Self::Videotoolbox => "videotoolbox",
+            Self::Software => "software",
+        }
+    }
+}
+
+enum EncoderChoice {
+    Nvenc,
+    Videotoolbox,
     Software,
 }
 
@@ -43,26 +61,55 @@ pub fn create_encoder(
     fps: u32,
     bitrate_mbps: u32,
 ) -> Result<Box<dyn H264Encoder>, String> {
-    match FfmpegEncoder::spawn(width, height, fps, bitrate_mbps, true) {
-        Ok(enc) => Ok(Box::new(enc)),
-        Err(err) => {
-            eprintln!("AlaveX: NVENC unavailable ({err}); falling back to libx264");
-            Ok(Box::new(FfmpegEncoder::spawn(
-                width,
-                height,
-                fps,
-                bitrate_mbps,
-                false,
-            )?))
+    #[cfg(target_os = "macos")]
+    {
+        match FfmpegEncoder::spawn(width, height, fps, bitrate_mbps, EncoderChoice::Videotoolbox) {
+            Ok(enc) => return Ok(Box::new(enc)),
+            Err(err) => {
+                eprintln!("AlaveX: VideoToolbox unavailable ({err}); falling back to libx264");
+            }
+        }
+        return Ok(Box::new(FfmpegEncoder::spawn(
+            width,
+            height,
+            fps,
+            bitrate_mbps,
+            EncoderChoice::Software,
+        )?));
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        match FfmpegEncoder::spawn(width, height, fps, bitrate_mbps, EncoderChoice::Nvenc) {
+            Ok(enc) => Ok(Box::new(enc)),
+            Err(err) => {
+                eprintln!("AlaveX: NVENC unavailable ({err}); falling back to libx264");
+                Ok(Box::new(FfmpegEncoder::spawn(
+                    width,
+                    height,
+                    fps,
+                    bitrate_mbps,
+                    EncoderChoice::Software,
+                )?))
+            }
         }
     }
 }
 
 pub fn probe_preferred_backend() -> EncoderBackend {
-    if ffmpeg_has_encoder("h264_nvenc") {
-        EncoderBackend::Nvenc
-    } else {
-        EncoderBackend::Software
+    #[cfg(target_os = "macos")]
+    {
+        if ffmpeg_has_encoder("h264_videotoolbox") {
+            return EncoderBackend::Videotoolbox;
+        }
+        return EncoderBackend::Software;
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        if ffmpeg_has_encoder("h264_nvenc") {
+            EncoderBackend::Nvenc
+        } else {
+            EncoderBackend::Software
+        }
     }
 }
 
@@ -98,7 +145,7 @@ impl FfmpegEncoder {
         height: u32,
         fps: u32,
         bitrate_mbps: u32,
-        want_nvenc: bool,
+        choice: EncoderChoice,
     ) -> Result<Self, String> {
         let bitrate = format!("{}M", bitrate_mbps.max(1));
         let fps_s = fps.clamp(15, 500).to_string();
@@ -125,38 +172,66 @@ impl FfmpegEncoder {
             "0".into(),
         ];
 
-        let backend = if want_nvenc {
-            if !ffmpeg_has_encoder("h264_nvenc") {
-                return Err("ffmpeg에 h264_nvenc가 없습니다".into());
+        let backend = match choice {
+            EncoderChoice::Nvenc => {
+                if !ffmpeg_has_encoder("h264_nvenc") {
+                    return Err("ffmpeg에 h264_nvenc가 없습니다".into());
+                }
+                args.extend([
+                    "-c:v".into(),
+                    "h264_nvenc".into(),
+                    "-preset".into(),
+                    "p1".into(),
+                    "-tune".into(),
+                    "ll".into(),
+                    "-rc".into(),
+                    "cbr".into(),
+                    "-b:v".into(),
+                    bitrate.clone(),
+                    "-maxrate".into(),
+                    bitrate.clone(),
+                    "-bufsize".into(),
+                    format!("{}M", (bitrate_mbps.max(1) / 2).max(2)),
+                    "-rc-lookahead".into(),
+                    "0".into(),
+                    "-g".into(),
+                    gop,
+                    "-bf".into(),
+                    "0".into(),
+                    "-delay".into(),
+                    "0".into(),
+                    "-zerolatency".into(),
+                    "1".into(),
+                ]);
+                EncoderBackend::Nvenc
             }
-            args.extend([
-                "-c:v".into(),
-                "h264_nvenc".into(),
-                "-preset".into(),
-                "p1".into(),
-                "-tune".into(),
-                "ll".into(),
-                "-rc".into(),
-                "cbr".into(),
-                "-b:v".into(),
-                bitrate.clone(),
-                "-maxrate".into(),
-                bitrate.clone(),
-                "-bufsize".into(),
-                format!("{}M", (bitrate_mbps.max(1) / 2).max(2)),
-                "-rc-lookahead".into(),
-                "0".into(),
-                "-g".into(),
-                gop,
-                "-bf".into(),
-                "0".into(),
-                "-delay".into(),
-                "0".into(),
-                "-zerolatency".into(),
-                "1".into(),
-            ]);
-            EncoderBackend::Nvenc
-        } else {
+            EncoderChoice::Videotoolbox => {
+                if !ffmpeg_has_encoder("h264_videotoolbox") {
+                    return Err("ffmpeg에 h264_videotoolbox가 없습니다".into());
+                }
+                args.extend([
+                    "-c:v".into(),
+                    "h264_videotoolbox".into(),
+                    "-allow_sw".into(),
+                    "1".into(),
+                    "-realtime".into(),
+                    "1".into(),
+                    "-prio_speed".into(),
+                    "1".into(),
+                    "-b:v".into(),
+                    bitrate.clone(),
+                    "-maxrate".into(),
+                    bitrate.clone(),
+                    "-g".into(),
+                    gop,
+                    "-bf".into(),
+                    "0".into(),
+                    "-pix_fmt".into(),
+                    "yuv420p".into(),
+                ]);
+                EncoderBackend::Videotoolbox
+            }
+            EncoderChoice::Software => {
             if !ffmpeg_has_encoder("libx264") {
                 return Err(
                     "ffmpeg를 아직 사용할 수 없습니다. 자동 설치가 끝날 때까지 잠시 기다려주세요."
@@ -184,6 +259,7 @@ impl FfmpegEncoder {
                 "yuv420p".into(),
             ]);
             EncoderBackend::Software
+            }
         };
 
         args.extend([

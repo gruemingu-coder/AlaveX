@@ -34,4 +34,4 @@ Base URL: `https://alavex.pages.dev/api`
 
 ## Host app
 
-Windows Host stays in `host-app/` (Rust + DXGI). Not part of this `apps/` tree.
+The host stays in `host-app/` (Rust). Windows captures with DXGI, macOS with ScreenCaptureKit. Not part of this `apps/` tree.

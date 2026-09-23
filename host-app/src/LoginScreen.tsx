@@ -27,25 +27,34 @@ export function LoginScreen() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-base-950 px-6 py-10">
-      <div className="mb-6 flex items-center gap-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">
-          L
+    <div className="flex min-h-screen flex-col bg-base-950 text-slate-100">
+      <header className="flex items-center gap-3 border-b border-base-700 px-5 py-4">
+        <div className="flex h-9 w-9 items-center justify-center bg-brand-600 text-sm font-semibold text-white">
+          A
         </div>
-        <span className="text-lg font-semibold text-white">
-          Luma<span className="text-brand-400">Link</span> Host
-        </span>
-      </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-brand-400">AlaveX</p>
+          <p className="text-base font-semibold leading-none">Host</p>
+        </div>
+      </header>
 
-      <div className="w-full max-w-xs rounded-2xl border border-base-700 bg-base-800 p-5">
-        <div className="mb-4 inline-flex w-full rounded-xl border border-base-700 bg-base-900 p-1" role="tablist">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-5 py-10">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">계정</p>
+        <h1 className="mt-2 text-2xl font-semibold text-white">
+          {mode === "login" ? "이 기기를 계정에 연결" : "호스트 계정 만들기"}
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-slate-400">
+          같은 계정으로 로그인한 스트리밍 앱에 이 Windows 또는 Mac이 자동으로 나타납니다.
+        </p>
+
+        <div className="mt-6 flex border border-base-700" role="tablist">
           <button
             type="button"
             role="tab"
             aria-selected={mode === "login"}
             onClick={() => switchMode("login")}
-            className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === "login" ? "bg-brand-600 text-white" : "text-slate-400 hover:text-slate-200"
+            className={`flex-1 px-3 py-2 text-sm ${
+              mode === "login" ? "bg-brand-600 text-white" : "text-slate-400 hover:text-slate-100"
             }`}
           >
             로그인
@@ -55,22 +64,17 @@ export function LoginScreen() {
             role="tab"
             aria-selected={mode === "signup"}
             onClick={() => switchMode("signup")}
-            className={`flex-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === "signup" ? "bg-brand-600 text-white" : "text-slate-400 hover:text-slate-200"
+            className={`flex-1 px-3 py-2 text-sm ${
+              mode === "signup" ? "bg-brand-600 text-white" : "text-slate-400 hover:text-slate-100"
             }`}
           >
             회원가입
           </button>
         </div>
 
-        <p className="mb-4 text-xs leading-relaxed text-slate-500">
-          로그인하면 이 PC가 계정에 등록되어, 같은 계정으로 로그인한 AlaveX Streaming 앱에서
-          자동으로 이 PC를 찾을 수 있어요.
-        </p>
-
-        <form className="space-y-3" onSubmit={handleSubmit}>
+        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="host-login-email" className="mb-1 block text-xs text-slate-300">
+            <label htmlFor="host-login-email" className="mb-1.5 block text-xs uppercase tracking-[0.14em] text-slate-400">
               이메일
             </label>
             <input
@@ -81,11 +85,11 @@ export function LoginScreen() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-base-600 bg-base-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-brand-500"
+              className="w-full border border-base-600 bg-base-900 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-brand-500"
             />
           </div>
           <div>
-            <label htmlFor="host-login-password" className="mb-1 block text-xs text-slate-300">
+            <label htmlFor="host-login-password" className="mb-1.5 block text-xs uppercase tracking-[0.14em] text-slate-400">
               비밀번호
             </label>
             <input
@@ -97,7 +101,7 @@ export function LoginScreen() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="8자 이상"
-              className="w-full rounded-lg border border-base-600 bg-base-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-brand-500"
+              className="w-full border border-base-600 bg-base-900 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-brand-500"
             />
           </div>
 
@@ -110,16 +114,12 @@ export function LoginScreen() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full bg-brand-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? "처리 중..." : mode === "login" ? "로그인" : "가입하고 시작하기"}
           </button>
         </form>
       </div>
-
-      <p className="mt-5 max-w-xs text-center text-[10px] leading-relaxed text-slate-600">
-        AlaveX는 독립적인 프로젝트이며 특정 상용 소프트웨어와 무관합니다.
-      </p>
     </div>
   );
 }

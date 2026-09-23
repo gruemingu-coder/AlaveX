@@ -223,10 +223,7 @@ async fn authenticate_client(
         let capture_backend = state
             .media
             .as_ref()
-            .map(|m| match m.preferred_backend() {
-                crate::media::EncoderBackend::Nvenc => "nvenc",
-                crate::media::EncoderBackend::Software => "software",
-            })
+            .map(|m| m.preferred_backend().wire_name())
             .unwrap_or("software");
 
         let ok = serde_json::json!({

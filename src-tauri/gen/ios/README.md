@@ -1,6 +1,6 @@
 # iOS target (LumaLink Streaming)
 
-Host remains Windows-only (DXGI). The Streaming client is a Tauri 2 iOS app.
+The host app supports Windows and macOS. The Streaming client is a Tauri 2 iOS app.
 
 ## Requirements
 

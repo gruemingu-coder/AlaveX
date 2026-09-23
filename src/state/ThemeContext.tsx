@@ -13,10 +13,10 @@ export interface ThemeOption {
 }
 
 export const THEME_OPTIONS: ThemeOption[] = [
-  { id: "dark", label: "다크", previewBg: "#07080d", previewAccent: "#7457ff" },
-  { id: "light", label: "라이트", previewBg: "#f4f5fa", previewAccent: "#6238f0" },
+  { id: "dark", label: "잉크", previewBg: "#12100d", previewAccent: "#c46228" },
+  { id: "light", label: "페이퍼", previewBg: "#f4eee4", previewAccent: "#a84e1e" },
   { id: "purple", label: "퍼플", previewBg: "#0d0716", previewAccent: "#a83ee8" },
-  { id: "sky", label: "스카이블루", previewBg: "#060c16", previewAccent: "#2b8fe0" },
+  { id: "sky", label: "스카이", previewBg: "#060c16", previewAccent: "#2b8fe0" },
 ];
 
 const THEME_KEY = "theme";

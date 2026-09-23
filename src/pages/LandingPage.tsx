@@ -32,7 +32,7 @@ const steps = [
   {
     step: "1",
     title: "앱 설치 후 로그인",
-    description: "게이밍 PC엔 AlaveX Host를, 사용할 기기엔 AlaveX Streaming을 설치하고 계정으로 로그인하세요.",
+    description: "게이밍 PC나 Mac엔 AlaveX Host를, 플레이할 기기엔 Streaming을 설치하고 같은 계정으로 로그인하세요.",
   },
   {
     step: "2",
@@ -56,7 +56,7 @@ export function LandingPage() {
         본문으로 건너뛰기
       </a>
 
-      <header className="sticky top-0 z-40 border-b border-base-800/80 bg-base-950/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-base-700 bg-base-950/95 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Logo />
           <nav aria-label="주 메뉴" className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
@@ -86,26 +86,22 @@ export function LandingPage() {
 
       <main id="main-content">
         {/* Hero */}
-        <section className="relative overflow-hidden bg-hero-glow px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
-          <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 lg:flex-row">
-            <div className="max-w-xl text-center lg:text-left">
+        <section className="border-b border-base-700 px-4 pb-16 pt-14 sm:px-6 sm:pt-20">
+          <div className="mx-auto grid max-w-6xl items-end gap-12 lg:grid-cols-[1.15fr_0.85fr]">
+            <div className="max-w-xl">
               <Badge tone="brand" className="mb-5">
-                독립 개발 · 오리지널 서비스
+                Windows · macOS 호스트
               </Badge>
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-heading sm:text-5xl">
+              <h1 className="text-4xl font-semibold leading-[1.05] tracking-tight text-heading sm:text-6xl">
                 내 PC 게임을
                 <br />
-                다른 기기에서
-                <br />
-                <span className="bg-gradient-to-r from-brand-400 to-accent-400 bg-clip-text text-transparent">
-                  낮은 지연으로 플레이
-                </span>
+                다른 화면으로.
               </h1>
-              <p className="mt-5 text-base text-slate-400 sm:text-lg">
-                AlaveX는 집에 있는 게이밍 PC의 화면과 사운드를 노트북, 태블릿, TV로
-                실시간 전송하는 독립 원격 스트리밍 서비스입니다.
+              <p className="mt-5 max-w-md text-base leading-relaxed text-slate-400 sm:text-lg">
+                집에 있는 Windows 또는 Mac의 화면을 노트북, 태블릿, TV로 보냅니다. 계정으로
+                기기를 묶고, PIN으로 한 번 연결합니다.
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link to="/download">
                   <Button size="lg" className="w-full sm:w-auto">
                     무료로 시작하기
@@ -119,23 +115,25 @@ export function LandingPage() {
               </div>
             </div>
 
-            <div className="w-full max-w-md">
-              <Card className="p-4 shadow-glow">
+            <div className="w-full">
+              <Card className="p-5">
                 <div className="flex items-center justify-between border-b border-base-700 pb-3">
-                  <span className="text-xs font-medium text-slate-400">AURORA-RIG · 스트리밍 중</span>
+                  <span className="text-[11px] uppercase tracking-[0.16em] text-slate-400">데스크 · 스트리밍</span>
                   <Badge tone="success">온라인</Badge>
                 </div>
-                <div className="mt-4 aspect-video overflow-hidden rounded-xl bg-gradient-to-br from-brand-700 via-brand-600 to-accent-500" />
-                <dl className="mt-4 grid grid-cols-4 gap-2 text-center">
+                <p className="mt-6 font-mono text-5xl tracking-[0.28em] text-brand-300">4821</p>
+                <p className="mt-2 text-xs text-slate-500">호스트 PIN · Windows 또는 macOS</p>
+                <div className="mt-6 aspect-[16/8] border border-base-700 bg-base-950" />
+                <dl className="mt-4 grid grid-cols-4 gap-px bg-base-700 text-center">
                   {[
                     ["해상도", "1440p"],
                     ["FPS", "120"],
                     ["지연", "11ms"],
                     ["비트레이트", "35Mbps"],
                   ].map(([label, value]) => (
-                    <div key={label} className="rounded-lg bg-base-800 py-2">
-                      <dt className="text-[10px] uppercase text-slate-500">{label}</dt>
-                      <dd className="font-mono text-sm font-semibold text-slate-100">{value}</dd>
+                    <div key={label} className="bg-base-900 py-2">
+                      <dt className="text-[10px] uppercase tracking-[0.12em] text-slate-500">{label}</dt>
+                      <dd className="font-mono text-sm text-slate-100">{value}</dd>
                     </div>
                   ))}
                 </dl>
@@ -153,7 +151,7 @@ export function LandingPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature) => (
               <Card key={feature.title} className="p-5">
-                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600/15 text-brand-300">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center border border-base-700 text-brand-300">
                   {feature.icon}
                 </div>
                 <h3 className="font-semibold text-slate-100">{feature.title}</h3>
@@ -173,7 +171,7 @@ export function LandingPage() {
             {steps.map((s) => (
               <li key={s.step}>
                 <Card className="h-full p-6">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-600 text-sm font-bold text-white">
+                  <span className="flex h-9 w-9 items-center justify-center bg-brand-600 text-sm font-semibold text-white">
                     {s.step}
                   </span>
                   <h3 className="mt-4 font-semibold text-slate-100">{s.title}</h3>

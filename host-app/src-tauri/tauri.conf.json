@@ -13,10 +13,10 @@
     "windows": [
       {
         "title": "AlaveX Host",
-        "width": 480,
-        "height": 720,
+        "width": 920,
+        "height": 680,
         "minWidth": 420,
-        "minHeight": 600,
+        "minHeight": 560,
         "resizable": true
       }
     ],
@@ -29,8 +29,8 @@
     "targets": ["msi"],
     "publisher": "AlaveX",
     "category": "Utility",
-    "shortDescription": "AlaveX Host App - share this PC's games with AlaveX clients",
-    "longDescription": "Runs on your gaming PC. Shows a pairing PIN, lists installed Steam games, and streams your screen to a paired AlaveX Streaming App client over your local network.",
+    "shortDescription": "AlaveX Host App - share this PC or Mac's games with AlaveX clients",
+    "longDescription": "Runs on your gaming PC (Windows or macOS). Shows a pairing PIN, lists installed Steam games, and streams your screen to a paired AlaveX Streaming App client over your local network.",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -42,6 +42,9 @@
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
       }
+    },
+    "macOS": {
+      "minimumSystemVersion": "12.3"
     }
   }
 }

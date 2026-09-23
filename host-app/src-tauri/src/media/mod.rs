@@ -1,38 +1,51 @@
 //! AlaveX native capture/encode/media server.
 //!
 //! Independent of Sunshine/Moonlight:
-//! DXGI desktop duplication → H.264 via NVIDIA NVENC (`ffmpeg h264_nvenc`)
-//! when available, else `libx264`. Annex-B NAL units go out over custom UDP :47998 (LLU2).
+//! Windows: DXGI → `h264_nvenc` or `libx264`.
+//! macOS: ScreenCaptureKit → `h264_videotoolbox` or `libx264`.
+//! Annex-B NAL units go out over custom UDP :47998 (LLU2).
 
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "macos"))]
 mod audio;
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "macos"))]
 mod capture;
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "macos"))]
 mod encode;
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "macos"))]
 mod server;
 
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "macos"))]
 pub use encode::EncoderBackend;
-#[cfg(windows)]
+#[cfg(any(windows, target_os = "macos"))]
 pub use server::{MediaHub, MediaStats, MEDIA_PORT};
 
-#[cfg(not(windows))]
+#[cfg(not(any(windows, target_os = "macos")))]
 pub const MEDIA_PORT: u16 = 47998;
 
-#[cfg(not(windows))]
+#[cfg(not(any(windows, target_os = "macos")))]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, serde::Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum EncoderBackend {
     Nvenc,
+    Videotoolbox,
     Software,
 }
 
-#[cfg(not(windows))]
+#[cfg(not(any(windows, target_os = "macos")))]
+impl EncoderBackend {
+    pub fn wire_name(self) -> &'static str {
+        match self {
+            Self::Nvenc => "nvenc",
+            Self::Videotoolbox => "videotoolbox",
+            Self::Software => "software",
+        }
+    }
+}
+
+#[cfg(not(any(windows, target_os = "macos")))]
 pub struct MediaHub;
 
-#[cfg(not(windows))]
+#[cfg(not(any(windows, target_os = "macos")))]
 impl MediaHub {
     pub fn new(_pin: String) -> Self {
         Self
@@ -58,7 +71,7 @@ impl MediaHub {
     }
 }
 
-#[cfg(not(windows))]
+#[cfg(not(any(windows, target_os = "macos")))]
 #[derive(Clone, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MediaStats {
@@ -71,7 +84,7 @@ pub struct MediaStats {
 }
 
 pub fn spawn(hub: std::sync::Arc<MediaHub>) {
-    #[cfg(windows)]
+    #[cfg(any(windows, target_os = "macos"))]
     {
         std::thread::Builder::new()
             .name("alavex-media".into())
@@ -82,7 +95,7 @@ pub fn spawn(hub: std::sync::Arc<MediaHub>) {
             })
             .expect("failed to spawn media thread");
     }
-    #[cfg(not(windows))]
+    #[cfg(not(any(windows, target_os = "macos")))]
     {
         let _ = hub;
     }

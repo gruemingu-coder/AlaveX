@@ -19,12 +19,10 @@ Runs on the gaming PC you want to stream **from**. Built with
   `libraryfolders.vdf` / `appmanifest_*.acf` parsing) and lists fully
   installed games. No mock data — if Steam isn't installed, the list is
   genuinely empty.
-- When a AlaveX Streaming App client authenticates with the correct
-  PIN and sends a WebRTC offer, this app calls the browser/webview's
-  own `navigator.mediaDevices.getDisplayMedia()` to **really** capture
-  the screen (and system audio, where supported) and streams it back
-  over a real `RTCPeerConnection` — no mock renderer. The screen is
-  captured once and shared across every connected client.
+- When a client authenticates with the PIN and sends `start-stream`,
+  the host captures the desktop natively and sends H.264 over LLU2 UDP.
+  Windows uses DXGI + NVENC (or libx264). macOS uses ScreenCaptureKit +
+  VideoToolbox (or libx264). One UDP viewer at a time.
 - **Supports multiple simultaneous clients** on the same PIN — the
   relay tags every message with a `clientId` so this app can run one
   independent `RTCPeerConnection` per connected client (see
@@ -105,13 +103,12 @@ The `.msi` is written to `src-tauri/target/release/bundle/msi/`.
   same-network streaming, matching AlaveX's "low latency on my LAN"
   positioning, not internet-wide play.
 - **FPS is a target, not a guarantee.** The UI allows requesting up to
-  500 FPS to match Moonlight/Sunshine-style sliders, but the actual
-  rate is bounded by the host's monitor refresh rate, `getDisplayMedia`
-  + WebRTC's browser-native (not custom GPU/DXGI) capture pipeline, and
-  the GPU's hardware H.264 encoder, if any. True Moonlight-class
-  capture (Desktop Duplication API + NVENC/AMF) would require replacing
-  this app's capture path with native Rust code — noted as a future
-  direction, not implemented here.
+  500 FPS, but the actual rate is bounded by the display, the encoder,
+  and the network. Windows captures with DXGI; macOS captures with
+  ScreenCaptureKit and scales frames to the requested resolution.
+- **macOS permissions.** Grant Screen Recording and Accessibility, then
+  relaunch. Install ffmpeg with `brew install ffmpeg` (VideoToolbox).
+  Virtual gamepads (ViGEmBus) are Windows-only.
 - **Wake-on-LAN only wakes what the NIC/BIOS allow.** AlaveX can send
   the magic packet from the Streaming desktop app, but the host PC's
   network adapter must have WOL enabled in Windows device settings

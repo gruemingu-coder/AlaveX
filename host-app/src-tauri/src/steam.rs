@@ -86,10 +86,19 @@ fn open_steam_uri(uri: &str) -> Result<(), String> {
         Ok(())
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(uri)
+            .spawn()
+            .map_err(|e| format!("Steam을 열지 못했습니다: {e}"))?;
+        Ok(())
+    }
+
+    #[cfg(not(any(target_os = "windows", target_os = "macos")))]
     {
         let _ = uri;
-        Err("Steam 실행/제어는 현재 Windows 호스트에서만 지원됩니다.".to_string())
+        Err("Steam 실행은 Windows와 macOS 호스트에서 지원됩니다.".to_string())
     }
 }
 
@@ -117,7 +126,18 @@ fn steam_install_path() -> Option<PathBuf> {
     Some(PathBuf::from(path))
 }
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(target_os = "macos")]
+fn steam_install_path() -> Option<PathBuf> {
+    let home = dirs::home_dir()?;
+    let path = home.join("Library/Application Support/Steam");
+    if path.is_dir() {
+        Some(path)
+    } else {
+        None
+    }
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
 fn steam_install_path() -> Option<PathBuf> {
     None
 }

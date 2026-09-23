@@ -55,7 +55,7 @@ export type SignalingMessage =
       hostName: string;
       macAddress?: string | null;
       mediaPort?: number;
-      captureBackend?: "nvenc" | "software";
+      captureBackend?: "nvenc" | "videotoolbox" | "software";
       mediaToken?: string | null;
       protocol?: string;
     }
@@ -65,7 +65,7 @@ export type SignalingMessage =
   | {
       type: "stream-ready";
       mediaPort: number;
-      captureBackend: "nvenc" | "software";
+      captureBackend: "nvenc" | "videotoolbox" | "software";
       clientId?: string;
     }
   | { type: "input"; event: unknown; clientId?: string }

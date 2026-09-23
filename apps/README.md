@@ -7,7 +7,7 @@ Tauri (`src-tauri/`) is being replaced by platform-native UI stacks:
 | macOS + iOS | SwiftUI | `apps/apple/` |
 | Android | Kotlin + Jetpack Compose | `apps/android/` |
 | Windows (streaming) | React Native + RN Windows | `apps/windows/` |
-| Windows (host) | Rust + DXGI (unchanged) | `host-app/` |
+| Windows / macOS (host) | Rust + DXGI or ScreenCaptureKit | `host-app/` |
 
 Shared protocol: `apps/shared/protocol.md` and `apps/shared/constants.json`.
 
@@ -59,4 +59,4 @@ npm install
 npm run tauri:build
 ```
 
-Must run on Windows (DXGI/NVENC).
+Windows uses DXGI/NVENC. macOS uses ScreenCaptureKit/VideoToolbox (`npm run tauri:mac:build` in `host-app`).

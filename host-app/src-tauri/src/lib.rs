@@ -48,10 +48,7 @@ fn start_native_stream(
         bitrate_mbps,
         host_audio.unwrap_or(true),
     );
-    Ok(match media.preferred_backend() {
-        media::EncoderBackend::Nvenc => "nvenc".into(),
-        media::EncoderBackend::Software => "software".into(),
-    })
+    Ok(media.preferred_backend().wire_name().into())
 }
 
 #[tauri::command]
@@ -93,9 +90,21 @@ fn inject_gamepad(
 
 #[tauri::command]
 fn capture_backend(state: tauri::State<Arc<SignalingState>>) -> String {
-    match state.media.as_ref().map(|m| m.preferred_backend()) {
-        Some(media::EncoderBackend::Nvenc) => "nvenc".into(),
-        _ => "software".into(),
+    state
+        .media
+        .as_ref()
+        .map(|m| m.preferred_backend().wire_name().to_string())
+        .unwrap_or_else(|| "software".into())
+}
+
+#[tauri::command]
+fn host_platform() -> String {
+    if cfg!(target_os = "macos") {
+        "macos".into()
+    } else if cfg!(windows) {
+        "windows".into()
+    } else {
+        "other".into()
     }
 }
 
@@ -204,6 +213,7 @@ pub fn run() {
             stop_native_stream,
             media_stats,
             capture_backend,
+            host_platform,
             get_installed_games,
             launch_game,
             launch_big_picture,
