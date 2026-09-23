@@ -11,7 +11,7 @@ UI·브랜딩·코드는 이 프로젝트를 위해 새로 작성되었습니다
 | 부분 | 위치 | 설명 |
 | --- | --- | --- |
 | 웹사이트 | `src/` (브라우저 빌드) | 소개·다운로드 전용. `/`와 `/download`만 노출하며, 브라우저에서는 스트리밍 UI에 들어가지 않습니다. |
-| 스트리밍 앱 | `src/` + `src-tauri/` | 같은 React UI를 Tauri로 패키징. **Windows / macOS / Android / iOS**. 계정 로그인, 클라우드 PC 목록, **LLU2 H.264(WebCodecs)**, WOL/LAN 검색. |
+| 스트리밍 앱 | `apps/apple/`, `apps/react-native/`, `src/` + `src-tauri/` | Mac·iPhone은 SwiftUI, Android·Windows는 React Native. 영상(LLU2)은 아직 Tauri 셸. |
 | 호스트 앱 | `host-app/` | Tauri + Rust. **Windows(DXGI/NVENC)와 macOS(ScreenCaptureKit/VideoToolbox)**. 계정 로그인, PIN, Steam, ffmpeg, 입력 주입, 트레이, 클라우드 하트비트. MSI / DMG. |
 
 계정 API는 Cloudflare Pages Functions + D1 (`worker/`, `functions/`, `migrations/`)로
@@ -95,32 +95,34 @@ Pages → Connect to Git)하면 `git push`할 때마다 자동으로 빌드·배
 `npm run build`, 빌드 출력 디렉터리는 `dist`로 설정하세요. D1 바인딩과 `JWT_SECRET`
 시크릿은 대시보드의 프로젝트 Settings → Functions/Bindings 에서도 등록할 수 있습니다.
 
-네이티브 앱:
+플레이 클라이언트:
 
-```powershell
-# 스트리밍 앱 (Windows)
-npm run tauri:dev
-npm run tauri:build
+```bash
+# Mac (SwiftUI)
+cd apps/apple && swift run AlaveXStreaming
 
-# 스트리밍 · macOS (Mac에서)
-npm run tauri:mac:build
+# iPhone (SwiftUI, Mac + Xcode)
+cd apps/apple && brew install xcodegen && xcodegen generate && open AlaveX.xcodeproj
 
-# 스트리밍 · Android
-npm run tauri:android:init
-npm run tauri:android:build
+# Android (React Native)
+cd apps/react-native && npm install && npm run android
 
-# 스트리밍 · iOS (Mac + Xcode)
-npm run tauri:ios:init
-npm run tauri:ios:build
+# Windows (React Native)
+cd apps/react-native && npm install && npx react-native-windows-init --overwrite && npm run windows
+```
 
-# 호스트 앱 (Windows 또는 macOS)
+호스트 앱 (Windows 또는 macOS, Tauri):
+
+```bash
 cd host-app
 npm install
 npm run tauri:dev
 npm run tauri:build
-# macOS DMG
+# macOS DMG — rustup으로 cargo를 설치한 뒤
 npm run tauri:mac:build
 ```
+
+영상 디코드가 있는 기존 Tauri 스트리밍 셸은 루트에서 `npm run tauri:dev` / `npm run tauri:mac:build` 로 빌드합니다. SwiftUI와 React Native 클라이언트는 로그인·PC 목록·페어링까지입니다.
 
 ## 사용해보기 (실제 흐름)
 
@@ -145,9 +147,10 @@ src/                  웹사이트 + 스트리밍 앱 UI
   utils/              platform (isDesktopApp), cloudDevices, games
 worker/               Cloudflare Worker (Hono) — /api/auth/*, /api/devices
 migrations/           D1 스키마
-src-tauri/            스트리밍 앱 네이티브 (UDP media, WOL, LAN discovery, store)
-  gen/android, gen/ios  모바일 타겟 안내 (init으로 프로젝트 생성)
-host-app/             호스트 앱 Windows (시그널링, Steam, 입력, tray, 하트비트)
+apps/apple/           Mac · iPhone SwiftUI 클라이언트
+apps/react-native/    Android · Windows React Native 클라이언트
+src-tauri/            영상 디코드가 있는 Tauri 스트리밍 셸 (UDP media, WOL)
+host-app/             호스트 앱 Windows / macOS (시그널링, Steam, 입력, tray)
 ```
 
 ### 스트리밍 경로

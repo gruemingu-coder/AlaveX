@@ -1,6 +1,6 @@
 name: Build Apple Clients (macOS + iOS)
 
-# Streaming client (macOS + iOS) and the macOS Host app.
+# SwiftUI streaming client (apps/apple), the Tauri video shell, and the macOS Host app.
 # Requires macos runners. iOS archive is unsigned unless APPLE_* secrets exist.
 
 on:
@@ -13,6 +13,24 @@ permissions:
   contents: write
 
 jobs:
+  swiftui:
+    name: SwiftUI client (Mac + iPhone)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Mac executable
+        run: swift build --package-path apps/apple
+
+      - name: Generate Xcode project and build iOS + Mac apps
+        run: |
+          set -euo pipefail
+          brew install xcodegen
+          cd apps/apple
+          xcodegen generate
+          xcodebuild -project AlaveX.xcodeproj -scheme AlaveX-macOS -destination 'platform=macOS' -quiet build CODE_SIGNING_ALLOWED=NO
+          xcodebuild -project AlaveX.xcodeproj -scheme AlaveX-iOS -destination 'generic/platform=iOS Simulator' -quiet build CODE_SIGNING_ALLOWED=NO
+
   macos:
     runs-on: macos-latest
     steps:

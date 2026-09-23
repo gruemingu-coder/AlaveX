@@ -1,0 +1,79 @@
+name: AlaveX
+options:
+  bundleIdPrefix: org.alavex
+  deploymentTarget:
+    iOS: "16.0"
+    macOS: "13.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+settings:
+  SWIFT_VERSION: "5.9"
+  CODE_SIGN_STYLE: Automatic
+targets:
+  AlaveXCore-iOS:
+    type: library.static
+    platform: iOS
+    sources:
+      - path: Sources/AlaveXCore
+    settings:
+      base:
+        PRODUCT_NAME: AlaveXCore
+        PRODUCT_MODULE_NAME: AlaveXCore
+        DEFINES_MODULE: YES
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        GENERATE_INFOPLIST_FILE: YES
+  AlaveXCore-macOS:
+    type: library.static
+    platform: macOS
+    sources:
+      - path: Sources/AlaveXCore
+    settings:
+      base:
+        PRODUCT_NAME: AlaveXCore
+        PRODUCT_MODULE_NAME: AlaveXCore
+        DEFINES_MODULE: YES
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        GENERATE_INFOPLIST_FILE: YES
+  AlaveX-iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/AlaveXStreaming
+    dependencies:
+      - target: AlaveXCore-iOS
+    info:
+      path: Apps/iOS/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.alavex.streaming
+        PRODUCT_NAME: AlaveX
+        TARGETED_DEVICE_FAMILY: "1,2"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        SUPPORTS_MACCATALYST: NO
+        GENERATE_INFOPLIST_FILE: NO
+  AlaveX-macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/AlaveXStreaming
+    dependencies:
+      - target: AlaveXCore-macOS
+    info:
+      path: Apps/macOS/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.alavex.streaming.macos
+        PRODUCT_NAME: AlaveX
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        GENERATE_INFOPLIST_FILE: NO
+schemes:
+  AlaveX-iOS:
+    build:
+      targets:
+        AlaveX-iOS: all
+        AlaveXCore-iOS: all
+  AlaveX-macOS:
+    build:
+      targets:
+        AlaveX-macOS: all
+        AlaveXCore-macOS: all

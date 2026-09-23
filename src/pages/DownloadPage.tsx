@@ -45,9 +45,10 @@ const CLIENTS = [
   {
     key: "windows",
     platform: "Windows",
+    stack: "React Native",
     format: "MSI",
     name: "Streaming · Windows",
-    hint: "노트북·미니PC에서 플레이",
+    hint: "노트북·미니PC. UI는 apps/react-native",
     url: STREAMING_WIN_URL,
     fileName: "AlaveX-Streaming-Setup.msi",
     ready: true,
@@ -55,9 +56,10 @@ const CLIENTS = [
   {
     key: "macos",
     platform: "macOS",
+    stack: "SwiftUI",
     format: "DMG",
     name: "Streaming · Mac",
-    hint: "Apple Silicon Mac (M1/M2/M3/M4)",
+    hint: "apps/apple · swift run AlaveXStreaming",
     url: STREAMING_MAC_URL,
     fileName: "AlaveX-Streaming-macOS.dmg",
     ready: true,
@@ -65,9 +67,10 @@ const CLIENTS = [
   {
     key: "android",
     platform: "Android",
+    stack: "React Native",
     format: "APK",
     name: "Streaming · Android",
-    hint: "휴대폰·태블릿 (사이드로드)",
+    hint: "휴대폰·태블릿. apps/react-native",
     url: STREAMING_ANDROID_URL,
     fileName: "AlaveX-Streaming.apk",
     ready: true,
@@ -75,9 +78,10 @@ const CLIENTS = [
   {
     key: "ios",
     platform: "iPhone / iPad",
+    stack: "SwiftUI",
     format: "IPA",
     name: "Streaming · iOS",
-    hint: "Mac에서 빌드 · TestFlight 배포",
+    hint: "apps/apple · Xcode 스킴 AlaveX-iOS",
     url: null as string | null,
     fileName: "GitHub Actions → alavex-ios",
     ready: false,
@@ -137,8 +141,9 @@ export function DownloadPage() {
         <section className="mt-10">
           <h2 className="text-lg font-bold text-slate-100">AlaveX Streaming 클라이언트</h2>
           <p className="mt-2 text-sm text-slate-400">
-            계정 로그인, LAN 검색, Wake-on-LAN, LLU2 H.264 스트리밍(WebCodecs). 같은 계정에
-            등록된 PC는 목록에서 바로 고를 수 있습니다.
+            Mac과 iPhone은 SwiftUI, Android와 Windows는 React Native입니다. 아래 설치 파일 중
+            MSI·DMG는 영상 재생이 되는 기존 Tauri 패키지이고, SwiftUI/React Native 앱은 로그인·PC
+            목록·페어링까지 동작합니다.
           </p>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {CLIENTS.map((client) => (
@@ -146,7 +151,7 @@ export function DownloadPage() {
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-base font-semibold text-slate-100">{client.name}</h3>
                   <Badge tone="neutral">
-                    {client.platform} · {client.format}
+                    {client.stack} · {client.format}
                   </Badge>
                 </div>
                 <p className="mt-1 text-sm text-slate-400">{client.hint}</p>

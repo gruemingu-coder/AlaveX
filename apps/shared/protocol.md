@@ -1,6 +1,6 @@
 # AlaveX native client protocol (shared)
 
-All native streaming clients (SwiftUI, Compose, React Native Windows) implement the same wire protocol as `src/services/streaming/signalingProtocol.ts`.
+Native streaming clients use SwiftUI on Mac and iPhone (`apps/apple`) and React Native on Android and Windows (`apps/react-native`). They follow the same wire protocol as `src/services/streaming/signalingProtocol.ts`.
 
 ## Ports (Sunshine-compatible)
 
