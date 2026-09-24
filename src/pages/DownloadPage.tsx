@@ -73,7 +73,7 @@ const CLIENTS = [
     stack: "React Native",
     format: "APK",
     name: "Streaming · Android",
-    hint: "휴대폰·태블릿. apps/react-native",
+    hint: "휴대폰·태블릿. 64비트(arm64) 전용. apps/react-native",
     url: STREAMING_ANDROID_URL,
     fileName: "AlaveX-Streaming.apk",
     missing: "APK 주소를 확인하지 못했습니다.",
@@ -203,7 +203,7 @@ export function DownloadPage() {
             <li>· 설정 → 보안 → <span className="text-slate-300">알 수 없는 앱 설치</span> 허용</li>
             <li>· 이전에 설치한 AlaveX가 있으면 먼저 삭제 후 재설치</li>
             <li>· 다운로드가 HTML로 저장되면 Chrome 메뉴 → <span className="text-slate-300">다시 다운로드</span>로 APK를 받으세요</li>
-            <li>· Wi‑Fi로 APK(~95MB) 받은 뒤 파일 관리자에서 `.apk`를 탭해 설치</li>
+            <li>· 64비트 폰용 APK(약 20MB)입니다. 받은 뒤 파일 관리자에서 `.apk`를 탭해 설치하세요</li>
           </ul>
         </Card>
 

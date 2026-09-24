@@ -112,6 +112,13 @@ jobs:
           if [ -z "${apk:-}" ]; then
             apk=$(find artifacts/android -name '*.apk' | head -n1)
           fi
+          # Cloudflare Pages rejects a single asset over 25 MiB, which would
+          # leave /downloads/AlaveX-Streaming.apk as a 404 on the site.
+          size=$(wc -c < "$apk")
+          if [ "$size" -gt 26214400 ]; then
+            echo "APK is ${size} bytes, over the 25 MiB Pages limit"
+            exit 1
+          fi
           cp "$apk" public/downloads/AlaveX-Streaming.apk
 
       - name: Commit and push APK
