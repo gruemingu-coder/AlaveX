@@ -49,6 +49,7 @@ class PlayerActivity : Activity() {
         val gameId = intent.getStringExtra("gameId")
 
         val root = FrameLayout(this)
+        root.setBackgroundColor(0xFF12100D.toInt())
         val surface = SurfaceView(this)
         root.addView(surface, FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
@@ -100,6 +101,8 @@ class PlayerActivity : Activity() {
     private fun keyButton(label: String, onClick: () -> Unit): Button {
         return Button(this).apply {
             text = label
+            setTextColor(0xFFF4EFE8.toInt())
+            setBackgroundColor(0xFF1C1814.toInt())
             setOnClickListener { onClick() }
         }
     }
