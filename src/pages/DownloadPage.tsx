@@ -204,6 +204,10 @@ export function DownloadPage() {
             <li>· 이전에 설치한 AlaveX가 있으면 먼저 삭제 후 재설치</li>
             <li>· 다운로드가 HTML로 저장되면 Chrome 메뉴 → <span className="text-slate-300">다시 다운로드</span>로 APK를 받으세요</li>
             <li>· 64비트 폰용 APK(약 20MB)입니다. 받은 뒤 파일 관리자에서 `.apk`를 탭해 설치하세요</li>
+            <li>
+              · 주소로 바로 받기:{" "}
+              <span className="text-slate-300">alavex.pages.dev/downloads/AlaveX-Streaming.apk</span>
+            </li>
           </ul>
         </Card>
 
