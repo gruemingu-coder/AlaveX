@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   Button,
+  NativeModules,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -16,6 +18,16 @@ import {SessionProvider, useSession} from './src/SessionContext';
 import {AlaveXProtocol, connectSignaling, resolveHostAddress} from './src/alavexApi';
 
 const Tab = createBottomTabNavigator();
+
+function play(host: string, pin: string) {
+  const address = host.trim();
+  if (!address || pin.trim().length < 4) return;
+  if (Platform.OS !== 'android') {
+    Alert.alert('플레이', '영상 스트리밍은 Android 앱에서 동작합니다.');
+    return;
+  }
+  NativeModules.AlaveXPlayer.play(address, pin.trim(), 'desktop');
+}
 
 function clientName(): string {
   if (Platform.OS === 'android') return 'AlaveX Android';
@@ -60,15 +72,28 @@ function LoginScreen() {
 
 function DevicesScreen() {
   const {devices, useRemote, refreshDevices} = useSession();
+  const [pins, setPins] = useState<Record<string, string>>({});
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Button title="새로고침" onPress={refreshDevices} />
-      {devices.map(d => (
-        <View key={d.id} style={styles.card}>
-          <Text style={styles.cardTitle}>{d.name}</Text>
-          <Text style={styles.caption}>{resolveHostAddress(d, useRemote)}</Text>
-        </View>
-      ))}
+      {devices.map(d => {
+        const address = resolveHostAddress(d, useRemote);
+        const pin = pins[d.id] ?? d.pairingPin ?? '';
+        return (
+          <View key={d.id} style={styles.card}>
+            <Text style={styles.cardTitle}>{d.name}</Text>
+            <Text style={styles.caption}>{address || '주소 없음'}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="호스트 PIN"
+              value={pin}
+              onChangeText={value => setPins(prev => ({...prev, [d.id]: value}))}
+              keyboardType="number-pad"
+            />
+            <Button title="플레이" onPress={() => play(address, pin)} disabled={!address || pin.length < 4} />
+          </View>
+        );
+      })}
     </ScrollView>
   );
 }
@@ -82,6 +107,7 @@ function PairingScreen() {
     <View style={styles.container}>
       <TextInput style={styles.input} placeholder="IP 또는 DDNS" value={address} onChangeText={setAddress} />
       <TextInput style={styles.input} placeholder="PIN" value={pin} onChangeText={setPin} />
+      <Button title="플레이" onPress={() => play(address, pin)} disabled={!address || pin.length < 4} />
       <Button
         title="연결 테스트"
         onPress={async () => {

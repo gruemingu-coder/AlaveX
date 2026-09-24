@@ -2,7 +2,7 @@
 
 Android와 Windows 스트리밍 클라이언트입니다. Mac과 iPhone은 SwiftUI (`apps/apple`)입니다.
 
-로그인, 클라우드 PC 목록, PIN 시그널링 테스트까지 이 앱에서 동작합니다. LLU2 영상 디코드는 아직 포함되어 있지 않습니다.
+Android에서는 로그인 후 호스트 PIN으로 바로 플레이합니다. 영상은 MediaCodec H.264, 소리는 AAC, 터치와 게임패드는 호스트로 전달됩니다. Mac과 iPhone 클라이언트는 아직 시그널링만 합니다.
 
 ## Android
 
