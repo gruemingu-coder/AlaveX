@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Logo } from "@/components/layout/Logo";
 import { Card } from "@/components/ui/Card";
@@ -28,6 +28,7 @@ const HOSTS = [
       "DXGI로 화면을 캡처하고 NVIDIA NVENC(없으면 libx264)로 인코딩합니다. ffmpeg는 최초 실행 때 자동으로 준비되고, 컨트롤러는 ViGEmBus가 있으면 가상 Xbox로 전달됩니다.",
     url: HOST_WIN_URL,
     fileName: "AlaveX-Host-Setup.msi",
+    missing: "Windows MSI가 아직 없습니다.",
   },
   {
     key: "macos",
@@ -38,6 +39,8 @@ const HOSTS = [
       "ScreenCaptureKit으로 화면을 캡처하고 VideoToolbox(없으면 libx264)로 인코딩합니다. ffmpeg는 Homebrew로 설치하고, 화면 기록·손쉬운 사용 권한이 필요합니다. 가상 게임패드는 Windows 호스트에서만 제공합니다.",
     url: HOST_MAC_URL,
     fileName: "AlaveX-Host-macOS.dmg",
+    missing:
+      "DMG가 사이트에 없습니다. 링크를 받으면 웹페이지가 .dmg로 저장되고 macOS가 파일 오류를 냅니다. Mac에서는 rustup 다음 host-app에서 npm run tauri:mac:build 로 만드세요.",
   },
 ] as const;
 
@@ -51,7 +54,7 @@ const CLIENTS = [
     hint: "노트북·미니PC. UI는 apps/react-native",
     url: STREAMING_WIN_URL,
     fileName: "AlaveX-Streaming-Setup.msi",
-    ready: true,
+    missing: "Windows MSI가 아직 없습니다.",
   },
   {
     key: "macos",
@@ -62,7 +65,8 @@ const CLIENTS = [
     hint: "apps/apple · swift run AlaveXStreaming",
     url: STREAMING_MAC_URL,
     fileName: "AlaveX-Streaming-macOS.dmg",
-    ready: true,
+    missing:
+      "DMG가 사이트에 없습니다. 받으면 웹페이지가 .dmg로 저장됩니다. Mac 클라이언트는 apps/apple에서 swift run AlaveXStreaming 으로 실행하세요.",
   },
   {
     key: "android",
@@ -73,7 +77,7 @@ const CLIENTS = [
     hint: "휴대폰·태블릿. apps/react-native",
     url: STREAMING_ANDROID_URL,
     fileName: "AlaveX-Streaming.apk",
-    ready: true,
+    missing: "APK 주소를 확인하지 못했습니다.",
   },
   {
     key: "ios",
@@ -84,7 +88,7 @@ const CLIENTS = [
     hint: "apps/apple · Xcode 스킴 AlaveX-iOS",
     url: null as string | null,
     fileName: "GitHub Actions → alavex-ios",
-    ready: false,
+    missing: "iPhone은 apps/apple에서 Xcode 스킴 AlaveX-iOS로 빌드합니다. Apple 서명이 필요합니다.",
   },
 ] as const;
 
@@ -129,10 +133,7 @@ export function DownloadPage() {
               <p className="mt-1 text-sm font-medium text-brand-400">{host.tagline}</p>
               <p className="mt-3 text-sm text-slate-400">{host.description}</p>
               <div className="mt-6">
-                <DownloadLink href={host.url} fileName={host.fileName} variant="primary">
-                  다운로드 (.{host.format.toLowerCase()})
-                </DownloadLink>
-                <p className="mt-2 text-center text-xs text-slate-600">{host.fileName}</p>
+                <InstallerButton href={host.url} fileName={host.fileName} missing={host.missing} />
               </div>
             </Card>
           ))}
@@ -141,9 +142,8 @@ export function DownloadPage() {
         <section className="mt-10">
           <h2 className="text-lg font-bold text-slate-100">AlaveX Streaming 클라이언트</h2>
           <p className="mt-2 text-sm text-slate-400">
-            Mac과 iPhone은 SwiftUI, Android와 Windows는 React Native입니다. 아래 설치 파일 중
-            MSI·DMG는 영상 재생이 되는 기존 Tauri 패키지이고, SwiftUI/React Native 앱은 로그인·PC
-            목록·페어링까지 동작합니다.
+            Mac과 iPhone은 SwiftUI, Android와 Windows는 React Native입니다. 설치 파일이 실제로
+            있을 때만 다운로드 버튼이 켜집니다.
           </p>
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
             {CLIENTS.map((client) => (
@@ -156,32 +156,12 @@ export function DownloadPage() {
                 </div>
                 <p className="mt-1 text-sm text-slate-400">{client.hint}</p>
                 <div className="mt-4 grow" />
-                {client.url && client.ready ? (
-                  <>
-                    <DownloadLink
-                      href={client.url}
-                      fileName={client.fileName}
-                      variant="secondary"
-                      external={client.url.startsWith("http")}
-                    >
-                      다운로드 (.{client.format.toLowerCase()})
-                    </DownloadLink>
-                    <p className="mt-2 text-center text-xs text-slate-600">{client.fileName}</p>
-                  </>
-                ) : (
-                  <>
-                    <Button className="w-full" variant="secondary" disabled>
-                      {client.key === "ios"
-                        ? "IPA · Actions / TestFlight"
-                        : `${client.platform} · 준비 중`}
-                    </Button>
-                    <p className="mt-2 text-center text-xs text-slate-600">
-                      {client.key === "ios"
-                        ? "`build-apple.yml` 아티팩트 · Apple 서명 필요"
-                        : "Mac 빌드는 GitHub Actions `build-apple`에서 제공 예정"}
-                    </p>
-                  </>
-                )}
+                <InstallerButton
+                  href={client.url}
+                  fileName={client.fileName}
+                  missing={client.missing}
+                  variant="secondary"
+                />
               </Card>
             ))}
           </div>
@@ -248,6 +228,68 @@ export function DownloadPage() {
         </Card>
       </main>
     </div>
+  );
+}
+
+type InstallerStatus = "checking" | "ready" | "missing";
+
+function useInstallerStatus(url: string | null): InstallerStatus {
+  const [status, setStatus] = useState<InstallerStatus>(url ? "checking" : "missing");
+
+  useEffect(() => {
+    if (!url) {
+      setStatus("missing");
+      return;
+    }
+    if (url.startsWith("http")) {
+      setStatus("ready");
+      return;
+    }
+    const ctrl = new AbortController();
+    fetch(url, { method: "HEAD", signal: ctrl.signal })
+      .then((res) => {
+        const type = res.headers.get("content-type") ?? "";
+        setStatus(res.ok && !type.includes("text/html") ? "ready" : "missing");
+      })
+      .catch((err: unknown) => {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        setStatus("missing");
+      });
+    return () => ctrl.abort();
+  }, [url]);
+
+  return status;
+}
+
+function InstallerButton({
+  href,
+  fileName,
+  missing,
+  variant = "primary",
+}: {
+  href: string | null;
+  fileName: string;
+  missing: string;
+  variant?: "primary" | "secondary";
+}) {
+  const status = useInstallerStatus(href);
+  if (status === "ready" && href) {
+    return (
+      <>
+        <DownloadLink href={href} fileName={fileName} variant={variant} external={href.startsWith("http")}>
+          다운로드
+        </DownloadLink>
+        <p className="mt-2 text-center text-xs text-slate-600">{fileName}</p>
+      </>
+    );
+  }
+  return (
+    <>
+      <Button className="w-full" variant="secondary" disabled>
+        {status === "checking" ? "파일 확인 중" : "설치 파일 없음"}
+      </Button>
+      {status === "missing" ? <p className="mt-2 text-xs leading-relaxed text-slate-500">{missing}</p> : null}
+    </>
   );
 }
 
