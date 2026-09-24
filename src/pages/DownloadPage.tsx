@@ -40,7 +40,7 @@ const HOSTS = [
     url: HOST_MAC_URL,
     fileName: "AlaveX-Host-macOS.dmg",
     missing:
-      "DMG가 사이트에 없습니다. 링크를 받으면 웹페이지가 .dmg로 저장되고 macOS가 파일 오류를 냅니다. Mac에서는 rustup 다음 host-app에서 npm run tauri:mac:build 로 만드세요.",
+      "사이트에 Mac 호스트 DMG는 없습니다. 앱은 host-app입니다. Mac에서 rustup 후 cd host-app && npm install && npm run tauri:build 하면 AlaveX Host.app과 DMG가 만들어집니다.",
   },
 ] as const;
 

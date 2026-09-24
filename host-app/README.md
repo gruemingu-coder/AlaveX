@@ -86,14 +86,16 @@ The first run needs the Rust toolchain and the Tauri v2 prerequisites
 (WebView2 is preinstalled on modern Windows). See
 <https://v2.tauri.app/start/prerequisites/>.
 
-## Build the installer (MSI)
+## Build
 
-```powershell
-npx tauri icon path\to\lumalink-host-logo-1024.png   # once, see icons/README.md
+Icons are already in `src-tauri/icons/` (`icon.icns`, `icon.ico`).
+
+```bash
+npm install
 npm run tauri:build
 ```
 
-The `.msi` is written to `src-tauri/target/release/bundle/msi/`.
+On macOS this writes `src-tauri/target/release/bundle/macos/AlaveX Host.app` and a DMG. On Windows it writes an MSI under `src-tauri/target/release/bundle/msi/`. macOS also needs `brew install ffmpeg` before the host can encode.
 
 ## Known limitations (read before relying on this)
 
