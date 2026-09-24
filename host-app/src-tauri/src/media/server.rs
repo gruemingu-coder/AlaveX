@@ -182,10 +182,7 @@ impl MediaHub {
             viewers: self.inner.viewers.lock().unwrap().len(),
             frames_sent: self.inner.frames_sent.load(Ordering::Relaxed),
             audio_sent: self.inner.audio_sent.load(Ordering::Relaxed),
-            backend: match self.preferred_backend() {
-                EncoderBackend::Nvenc => "nvenc".into(),
-                EncoderBackend::Software => "software".into(),
-            },
+            backend: self.preferred_backend().wire_name().into(),
             host_audio: self.inner.config.lock().unwrap().host_audio,
         }
     }
@@ -460,8 +457,8 @@ fn capture_loop(hub: Arc<MediaHub>) -> Result<(), String> {
         }
 
         let (w, h) = {
-            let c = capturer.as_ref().unwrap();
-            (c.width as u32, c.height as u32)
+            let c = hub.inner.config.lock().unwrap();
+            (even_dim(c.width), even_dim(c.height))
         };
         *hub.inner.capture_size.lock().unwrap() = (w, h);
 
@@ -499,7 +496,22 @@ fn capture_loop(hub: Arc<MediaHub>) -> Result<(), String> {
             }
         };
 
-        match encoder.as_mut().unwrap().encode_bgra(&frame) {
+        let (cap_w, cap_h) = {
+            let c = capturer.as_ref().unwrap();
+            (c.width as u32, c.height as u32)
+        };
+        let pixels = if cap_w == w && cap_h == h {
+            frame
+        } else {
+            scale_bgra(&frame, cap_w, cap_h, w, h)
+        };
+        if pixels.len() < (w as usize) * (h as usize) * 4 {
+            eprintln!("AlaveX frame scale failed");
+            capturer = None;
+            continue;
+        }
+
+        match encoder.as_mut().unwrap().encode_bgra(&pixels) {
             Ok(packets) => {
                 for packet in packets {
                     let is_key = looks_like_key_frame(&packet.data);
@@ -644,6 +656,32 @@ fn build_video_packet(
     pkt.extend_from_slice(&crc.to_be_bytes());
     pkt.extend_from_slice(payload);
     pkt
+}
+
+fn even_dim(n: u32) -> u32 {
+    let n = n.max(2);
+    n - (n % 2)
+}
+
+fn scale_bgra(src: &[u8], sw: u32, sh: u32, tw: u32, th: u32) -> Vec<u8> {
+    let sw = sw as usize;
+    let sh = sh as usize;
+    let tw = tw as usize;
+    let th = th as usize;
+    if sw == 0 || sh == 0 || tw == 0 || th == 0 || src.len() < sw * sh * 4 {
+        return Vec::new();
+    }
+    let mut dst = vec![0u8; tw * th * 4];
+    for y in 0..th {
+        let sy = y * sh / th;
+        for x in 0..tw {
+            let sx = x * sw / tw;
+            let si = (sy * sw + sx) * 4;
+            let di = (y * tw + x) * 4;
+            dst[di..di + 4].copy_from_slice(&src[si..si + 4]);
+        }
+    }
+    dst
 }
 
 fn looks_like_key_frame(data: &[u8]) -> bool {

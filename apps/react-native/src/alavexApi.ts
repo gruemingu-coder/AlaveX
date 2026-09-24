@@ -71,7 +71,7 @@ export type HandshakeResult = {
 export function connectSignaling(
   host: string,
   pin: string,
-  clientName = 'AlaveX Windows',
+  clientName = 'AlaveX',
 ): Promise<HandshakeResult> {
   return new Promise((resolve, reject) => {
     const url = `ws://${host}:${AlaveXProtocol.signalingPort}/signal?role=client`;

@@ -27,7 +27,7 @@ type ConnState = "starting" | "listening" | "active" | "relay-error";
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const PUBLIC_HOST_STORAGE_KEY = "alavex-public-host";
 
-/** One native UDP session per client (DXGI + NVENC/libx264). */
+/** One native UDP session per client (DXGI/NVENC or ScreenCaptureKit/VideoToolbox). */
 interface ClientSession {
   kind: "native";
 }
@@ -74,6 +74,7 @@ export function App() {
     | null
   >(null);
   const [localIp, setLocalIp] = useState<string | null>(null);
+  const [hostPlatform, setHostPlatform] = useState("other");
   const [publicHost, setPublicHost] = useState(() =>
     typeof window !== "undefined" ? window.localStorage.getItem(PUBLIC_HOST_STORAGE_KEY) ?? "" : ""
   );
@@ -98,6 +99,7 @@ export function App() {
     void invoke<{ localIp: string | null }>("get_device_info").then((info) => {
       setLocalIp(info.localIp);
     });
+    void invoke<string>("host_platform").then(setHostPlatform).catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -207,7 +209,8 @@ export function App() {
             encodeSignalingMessage({
               type: "stream-ready",
               mediaPort: MEDIA_PORT,
-              captureBackend: backend === "nvenc" ? "nvenc" : "software",
+              captureBackend:
+                backend === "nvenc" || backend === "videotoolbox" ? backend : "software",
               clientId,
             })
           );
@@ -360,27 +363,29 @@ export function App() {
     void invoke("launch_big_picture").catch(() => undefined);
   };
 
+  const platformLabel = hostPlatform === "macos" ? "macOS" : hostPlatform === "windows" ? "Windows" : "Host";
+  const engineLabel =
+    hostPlatform === "macos" ? "ScreenCaptureKit + VideoToolbox" : "DXGI + NVENC";
+
   return (
-    <div className="flex min-h-screen flex-col gap-6 bg-base-950 px-6 py-8">
-      <header className="flex items-center justify-between gap-3">
+    <div className="min-h-screen bg-base-950 text-slate-100">
+      <header className="flex items-center justify-between gap-3 border-b border-base-700 px-5 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-sm font-bold text-white">
-            AX
+          <div className="flex h-9 w-9 items-center justify-center bg-brand-600 text-sm font-semibold tracking-tight text-white">
+            A
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white">AlaveX Host</h1>
-            <p className="text-xs text-slate-500">이 PC의 게임을 다른 기기에서 스트리밍합니다</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-brand-400">AlaveX</p>
+            <h1 className="text-base font-semibold leading-none text-white">Host · {platformLabel}</h1>
           </div>
         </div>
         {user && (
-          <div className="flex items-center gap-2">
-            <span className="hidden max-w-[10rem] truncate text-xs text-slate-500 sm:block">
-              {user.email}
-            </span>
+          <div className="flex items-center gap-3">
+            <span className="hidden max-w-[12rem] truncate text-xs text-slate-400 sm:block">{user.email}</span>
             <button
               type="button"
               onClick={() => void logout()}
-              className="rounded-lg border border-base-600 px-3 py-1.5 text-xs text-slate-300 transition-colors hover:border-brand-500 hover:text-white"
+              className="border border-base-600 px-3 py-1.5 text-xs text-slate-300 transition-colors hover:border-brand-500 hover:text-white"
             >
               로그아웃
             </button>
@@ -389,23 +394,18 @@ export function App() {
       </header>
 
       {ffmpegSetup && ffmpegSetup.status !== "ready" && (
-        <section className="rounded-2xl border border-brand-500/30 bg-brand-500/5 p-4 text-sm">
+        <section className="border-b border-brand-500/40 bg-brand-500/10 px-5 py-3 text-sm">
           {ffmpegSetup.status === "downloading" && (
-            <p className="text-slate-300">
-              ffmpeg 준비 중... ({ffmpegSetup.percent}%) — 최초 1회만 필요하며, 이후 실행부터는
-              바로 스트리밍할 수 있습니다.
-            </p>
+            <p className="text-slate-200">ffmpeg 준비 중 {ffmpegSetup.percent}% — 최초 한 번만 받습니다.</p>
           )}
-          {ffmpegSetup.status === "extracting" && (
-            <p className="text-slate-300">ffmpeg 압축을 푸는 중...</p>
-          )}
+          {ffmpegSetup.status === "extracting" && <p className="text-slate-200">ffmpeg 압축을 푸는 중...</p>}
           {ffmpegSetup.status === "error" && (
             <div className="flex items-center justify-between gap-3">
               <p className="text-danger-400">ffmpeg 준비 실패: {ffmpegSetup.message}</p>
               <button
                 type="button"
                 onClick={retryFfmpegSetup}
-                className="shrink-0 rounded-lg border border-base-600 px-3 py-1.5 text-xs text-slate-300 transition-colors hover:border-brand-500 hover:text-white"
+                className="shrink-0 border border-base-600 px-3 py-1.5 text-xs text-slate-200 hover:border-brand-500"
               >
                 다시 시도
               </button>
@@ -414,131 +414,98 @@ export function App() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-base-700 bg-base-900 p-6 text-center">
-        <p className="text-xs uppercase tracking-wide text-slate-500">페어링 PIN</p>
-        <p className="mt-2 font-mono text-5xl font-bold tracking-[0.3em] text-brand-300">
-          {pin ?? "----"}
-        </p>
-        <p className="mt-3 text-xs text-slate-500">
-          AlaveX 앱의 페어링 화면에서 이 PC의 IP와 PIN을 입력하세요. PIN은 URL이 아닌 연결
-          메시지 본문으로만 전달됩니다. 네이티브 스트리밍(UDP)은 동시에 시청자 1명만 허용합니다.
-        </p>
-        <button
-          type="button"
-          onClick={handleRegeneratePin}
-          disabled={isRegenerating}
-          className="mt-4 rounded-lg border border-base-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-brand-500 hover:text-white disabled:opacity-50"
-        >
-          {isRegenerating ? "재생성 중..." : "PIN 재생성"}
-        </button>
-      </section>
+      {hostPlatform === "macos" && (
+        <section className="border-b border-base-700 bg-base-900 px-5 py-3 text-xs leading-relaxed text-slate-400">
+          macOS에서는 시스템 설정의 <span className="text-slate-200">화면 기록</span>과{" "}
+          <span className="text-slate-200">손쉬운 사용</span>에 AlaveX Host를 허용해야 화면 전송과 입력이
+          동작합니다. 허용 후 앱을 한 번 다시 여세요. ffmpeg는 Homebrew(`brew install ffmpeg`)로 준비합니다.
+        </section>
+      )}
 
-      <section className="rounded-2xl border border-base-700 bg-base-900 p-5 text-left">
-        <p className="text-xs uppercase tracking-wide text-slate-500">네트워크 · 포트 포워딩</p>
-        <dl className="mt-3 space-y-2 text-sm">
-          <div className="flex justify-between gap-3">
-            <dt className="text-slate-500">LAN IP</dt>
-            <dd className="font-mono text-slate-200">{localIp ?? "확인 중..."}</dd>
+      <div className="grid lg:grid-cols-[minmax(16rem,0.85fr)_minmax(0,1.15fr)]">
+        <section className="border-b border-base-700 px-5 py-8 lg:border-b-0 lg:border-r">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">페어링 PIN</p>
+          <p className="mt-3 font-mono text-6xl font-medium tracking-[0.28em] text-brand-300">
+            {pin ?? "----"}
+          </p>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">
+            스트리밍 앱에 이 기기의 IP와 PIN을 입력하세요. PIN은 주소가 아니라 연결 메시지 본문으로만
+            갑니다. 영상은 시청자 한 명만 받습니다.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={handleRegeneratePin}
+              disabled={isRegenerating}
+              className="bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-500 disabled:opacity-50"
+            >
+              {isRegenerating ? "재발급 중..." : "PIN 재발급"}
+            </button>
+            <button
+              type="button"
+              onClick={handleLaunchBigPicture}
+              className="border border-base-600 px-4 py-2 text-sm text-slate-200 hover:border-brand-500"
+            >
+              Steam 빅픽처
+            </button>
           </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-slate-500">시그널링</dt>
-            <dd className="font-mono text-slate-200">TCP {SIGNALING_PORT}</dd>
-          </div>
-          <div className="flex justify-between gap-3">
-            <dt className="text-slate-500">미디어 (LLU2)</dt>
-            <dd className="font-mono text-slate-200">UDP {MEDIA_PORT}</dd>
-          </div>
-        </dl>
-        <p className="mt-3 text-xs leading-relaxed text-slate-500">
-          Sunshine과 같은 포트 범위(TCP 47984–47990, UDP 47998–48010)를 공유기에서 이 PC로
-          포워딩하면 밖에서도 접속할 수 있습니다. Windows 방화벽에서도 인바운드를 허용해야 합니다.
-        </p>
-        <label htmlFor="public-host" className="mt-4 block text-xs font-medium text-slate-400">
-          공인 IP 또는 DDNS (선택)
-        </label>
-        <input
-          id="public-host"
-          value={publicHost}
-          onChange={(e) => {
-            const value = e.target.value;
-            setPublicHost(value);
-            window.localStorage.setItem(PUBLIC_HOST_STORAGE_KEY, value);
-          }}
-          placeholder="예: 203.0.113.10 또는 mypc.example.com"
-          className="mt-1.5 w-full rounded-xl border border-base-600 bg-base-950 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-brand-500"
-        />
-        <p className="mt-2 text-[11px] leading-relaxed text-warn-400/90">
-          ws:// 시그널링 + PIN만으로 보호됩니다. 인터넷에 포트를 열기 전에 보안 위험을 이해하세요.
-        </p>
-      </section>
-
-      <section className="rounded-2xl border border-base-700 bg-base-900 p-5">
-        <div className="flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wide text-slate-500">연결 상태</p>
+          <p className="mt-8 text-[11px] uppercase tracking-[0.18em] text-slate-500">세션</p>
+          <p className="mt-2 text-sm text-slate-100">{connStateLabel(connState, clientCount, engineLabel)}</p>
           {clientCount > 0 && (
-            <span className="rounded-full bg-brand-500/15 px-2.5 py-0.5 text-[11px] font-semibold text-brand-300">
-              연결된 클라이언트 {clientCount}명
-            </span>
+            <p className="mt-1 text-xs text-brand-300">연결된 클라이언트 {clientCount}</p>
           )}
-        </div>
-        <p className="mt-2 text-sm font-medium text-slate-100">{connStateLabel(connState, clientCount)}</p>
-        {streamError && <p className="mt-2 text-sm text-danger-400">{streamError}</p>}
-        {mediaStats && (
-          <dl className="mt-3 grid grid-cols-2 gap-2 text-xs text-slate-400 sm:grid-cols-3">
-            <div>
-              <dt className="text-slate-600">미디어</dt>
-              <dd className="font-medium text-slate-200">
-                {mediaStats.streaming ? "스트리밍 중" : "대기"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-slate-600">인코더</dt>
-              <dd className="font-medium text-slate-200">{mediaStats.backend}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-600">UDP 시청자</dt>
-              <dd className="font-medium text-slate-200">{mediaStats.viewers}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-600">영상 프레임</dt>
-              <dd className="font-medium text-slate-200">{mediaStats.framesSent}</dd>
-            </div>
-            <div>
-              <dt className="text-slate-600">오디오</dt>
-              <dd className="font-medium text-slate-200">
-                {mediaStats.hostAudio ? `${mediaStats.audioSent} pkt` : "끔"}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-slate-600">프로토콜</dt>
-              <dd className="font-medium text-slate-200">LLU2</dd>
-            </div>
-          </dl>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
+          {streamError && <p className="mt-2 text-sm text-danger-400">{streamError}</p>}
           {clientCount > 0 && (
             <button
               type="button"
               onClick={stopAllStreaming}
-              className="rounded-lg bg-danger-500/15 px-4 py-2 text-sm font-medium text-danger-400 hover:bg-danger-500/25"
+              className="mt-4 border border-danger-500/50 px-4 py-2 text-sm text-danger-400 hover:bg-danger-500/10"
             >
               스트리밍 중지
             </button>
           )}
-          <button
-            type="button"
-            onClick={handleLaunchBigPicture}
-            className="rounded-lg border border-base-600 px-4 py-2 text-sm text-slate-300 transition-colors hover:border-brand-500 hover:text-white"
-          >
-            Steam 빅픽처 모드 실행
-          </button>
-        </div>
-      </section>
+        </section>
 
-      <section className="flex-1 rounded-2xl border border-base-700 bg-base-900 p-5">
+        <section className="border-b border-base-700 px-5 py-6">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">경로</p>
+          <dl className="mt-4 divide-y divide-base-700 border-y border-base-700 text-sm">
+            <Row label="LAN IP" value={localIp ?? "확인 중..."} />
+            <Row label="시그널링" value={`TCP ${SIGNALING_PORT}`} />
+            <Row label="미디어" value={`UDP ${MEDIA_PORT}`} />
+            <Row label="엔진" value={engineLabel} />
+            <Row label="인코더" value={mediaStats?.backend ?? "대기"} />
+            <Row label="UDP 시청자" value={String(mediaStats?.viewers ?? 0)} />
+            <Row label="프레임" value={String(mediaStats?.framesSent ?? 0)} />
+            <Row
+              label="오디오"
+              value={mediaStats?.hostAudio ? `${mediaStats.audioSent} pkt` : "끔"}
+            />
+          </dl>
+          <label htmlFor="public-host" className="mt-5 block text-[11px] uppercase tracking-[0.18em] text-slate-500">
+            공인 IP 또는 DDNS
+          </label>
+          <input
+            id="public-host"
+            value={publicHost}
+            onChange={(e) => {
+              const value = e.target.value;
+              setPublicHost(value);
+              window.localStorage.setItem(PUBLIC_HOST_STORAGE_KEY, value);
+            }}
+            placeholder="203.0.113.10 또는 mypc.example.com"
+            className="mt-2 w-full border border-base-600 bg-base-900 px-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:border-brand-500"
+          />
+          <p className="mt-2 text-xs leading-relaxed text-warn-400">
+            시그널링은 암호화되지 않은 ws:// 입니다. 포트를 인터넷에 열기 전에 위험을 확인하세요.
+            {hostPlatform === "windows" ? " Windows 방화벽 인바운드도 허용해야 합니다." : " macOS 방화벽이 켜져 있으면 수신을 허용하세요."}
+          </p>
+        </section>
+      </div>
+
+      <section className="px-5 py-5">
         <div className="mb-3 flex items-center justify-between">
-          <p className="text-xs uppercase tracking-wide text-slate-500">
-            설치된 Steam 게임 ({games.length})
+          <p className="text-[11px] uppercase tracking-[0.18em] text-slate-500">
+            Steam 라이브러리 · {games.length}
           </p>
           <button type="button" onClick={loadGames} className="text-xs text-brand-400 hover:text-brand-300">
             새로고침
@@ -549,17 +516,14 @@ export function App() {
         ) : games.length === 0 ? (
           <p className="text-sm text-slate-500">설치된 게임을 찾지 못했습니다.</p>
         ) : (
-          <ul className="max-h-72 space-y-1.5 overflow-y-auto pr-1">
+          <ul className="max-h-64 divide-y divide-base-700 overflow-y-auto border-y border-base-700">
             {games.map((game) => (
-              <li
-                key={game.id}
-                className="flex items-center justify-between rounded-lg bg-base-800/70 px-3 py-2 text-sm text-slate-200"
-              >
-                <span className="truncate">{game.title}</span>
+              <li key={game.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+                <span className="truncate text-slate-100">{game.title}</span>
                 <button
                   type="button"
                   onClick={() => handleLaunch(game.id)}
-                  className="shrink-0 rounded-md border border-base-600 px-2 py-1 text-xs text-slate-400 hover:border-brand-500 hover:text-white"
+                  className="shrink-0 border border-base-600 px-2 py-1 text-xs text-slate-300 hover:border-brand-500 hover:text-white"
                 >
                   실행
                 </button>
@@ -569,34 +533,37 @@ export function App() {
         )}
       </section>
 
-      <footer className="text-center text-xs text-slate-600">
+      <footer className="border-t border-base-800 px-5 py-4 text-xs leading-relaxed text-slate-500">
         <p>
-          창을 닫아도 시스템 트레이에서 계속 실행되며 연결을 받을 수 있습니다. 완전히 종료하려면
-          트레이 아이콘 메뉴에서 "종료"를 선택하세요. LAN 전용 · 시그널링은 ws:// · 미디어는
-          LLU2(mediaToken + XOR).
+          창을 닫아도 메뉴 막대(또는 트레이)에서 계속 연결을 받습니다. 완전히 끄려면 메뉴의 종료를
+          선택하세요. v{APP_VERSION}
         </p>
-        <p className="mt-2 text-[11px] text-slate-700">
-          AlaveX는 독립적인 프로젝트이며 특정 상용 소프트웨어와 무관합니다. 모든 브랜드 자산은
-          오리지널 디자인입니다.
-        </p>
-        <p className="mt-1 font-mono text-slate-700">v{APP_VERSION}</p>
       </footer>
     </div>
   );
 }
 
-function connStateLabel(state: ConnState, clientCount: number): string {
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-2">
+      <dt className="text-slate-500">{label}</dt>
+      <dd className="truncate font-mono text-slate-100">{value}</dd>
+    </div>
+  );
+}
+
+function connStateLabel(state: ConnState, clientCount: number, engineLabel: string): string {
   switch (state) {
     case "starting":
-      return "시작하는 중...";
+      return "시작하는 중";
     case "listening":
       return "대기 중 — 클라이언트 연결을 기다리고 있습니다";
     case "active":
       return clientCount > 1
-        ? `${clientCount}개의 클라이언트에 DXGI+NVENC로 스트리밍 중`
-        : "클라이언트에 DXGI+NVENC로 스트리밍 중";
+        ? `${clientCount}개 클라이언트에 ${engineLabel}로 스트리밍 중`
+        : `${engineLabel}로 스트리밍 중`;
     case "relay-error":
-      return "시그널링 서버에 연결할 수 없습니다. 앱을 재시작해주세요.";
+      return "시그널링 서버에 연결할 수 없습니다. 앱을 다시 열어주세요.";
     default:
       return "";
   }

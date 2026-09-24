@@ -1,62 +1,67 @@
 # AlaveX native streaming clients
 
-Tauri (`src-tauri/`) is being replaced by platform-native UI stacks:
+호스트(`host-app/`)는 Tauri + Rust 그대로입니다. 플레이하는 쪽 UI만 플랫폼별로 나눕니다.
 
-| Platform | Stack | Path |
+| 기기 | UI | 경로 |
 | --- | --- | --- |
-| macOS + iOS | SwiftUI | `apps/apple/` |
-| Android | Kotlin + Jetpack Compose | `apps/android/` |
-| Windows (streaming) | React Native + RN Windows | `apps/windows/` |
-| Windows (host) | Rust + DXGI (unchanged) | `host-app/` |
+| Mac, iPhone, iPad | SwiftUI | `apps/apple/` |
+| Android, Windows | React Native | `apps/react-native/` |
+| Windows / macOS 호스트 | Rust + DXGI 또는 ScreenCaptureKit | `host-app/` |
 
-Shared protocol: `apps/shared/protocol.md` and `apps/shared/constants.json`.
+`apps/android/` 의 Kotlin Compose 프로젝트는 더 이상 클라이언트 경로가 아닙니다.
 
-Web site + account API remain in repo root (`src/`, `worker/`).
+SwiftUI와 React Native 앱은 계정 로그인, 클라우드 PC 목록, PIN 시그널링 테스트까지 구현되어 있습니다. LLU2 영상 디코드는 아직 `src-tauri/` 스트리밍 셸에만 있습니다.
 
-## Build
+공유 프로토콜: `apps/shared/protocol.md`, `apps/shared/constants.json`.
 
-### Apple (SwiftUI)
+웹사이트와 계정 API는 저장소 루트(`src/`, `worker/`)입니다.
+
+## 빌드
+
+### Mac / iPhone (SwiftUI)
 
 ```bash
 cd apps/apple
-swift build
-# Xcode: open Package.swift as project, run AlaveXStreaming scheme (macOS or iOS simulator)
+swift run AlaveXStreaming
 ```
 
-Requires Xcode 15+, macOS 12+ / iOS 15+.
-
-### Android (Compose)
-
-Open `apps/android` in **Android Studio** (recommended — it generates the Gradle wrapper), or:
+iPhone 시뮬레이터는 Xcode가 필요합니다.
 
 ```bash
-cd apps/android
-./gradlew assembleDebug
-# APK: app/build/outputs/apk/debug/app-debug.apk
+brew install xcodegen
+cd apps/apple
+xcodegen generate
+open AlaveX.xcodeproj
 ```
 
-Requires Android Studio, JDK 17, Android SDK 26+.
+Xcode 15+, macOS 13+, iOS 16+.
+
+### Android (React Native)
+
+```bash
+cd apps/react-native
+npm install
+npm run android
+```
+
+Android Studio, JDK 17, Android SDK 35. APK: `npm run android:apk`.
 
 ### Windows (React Native)
 
 ```bash
-cd apps/windows
+cd apps/react-native
 npm install
-# First time on Windows only — generates native C++ project:
 npx react-native-windows-init --overwrite
-npx react-native run-windows
+npm run windows
 ```
 
-Requires Visual Studio 2022 with C++ desktop workload, Windows 10/11.
+Visual Studio 2022 C++ 데스크톱 워크로드, Windows 10/11.
 
-The JS/TS layer (login, devices, signaling test) works cross-platform; native `windows/` folder is created on a Windows machine.
+### 호스트
 
-### Host (Windows MSI)
-
-```powershell
+```bash
 cd host-app
 npm install
-npm run tauri:build
+npm run tauri:build          # Windows MSI
+npm run tauri:mac:build      # macOS DMG. Rust(rustup)와 ffmpeg 필요
 ```
-
-Must run on Windows (DXGI/NVENC).

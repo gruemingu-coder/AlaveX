@@ -77,21 +77,20 @@ export default {
       },
       fontFamily: {
         sans: [
-          "Pretendard Variable",
-          "Pretendard",
-          "-apple-system",
-          "system-ui",
+          "Avenir Next",
           "Segoe UI",
-          "Roboto",
+          "Apple SD Gothic Neo",
+          "Malgun Gothic",
+          "Pretendard",
+          "system-ui",
           "sans-serif",
         ],
         mono: ["JetBrains Mono", "SFMono-Regular", "Menlo", "monospace"],
       },
       boxShadow: {
-        glow: "0 0 0 1px rgb(var(--color-brand-500) / 0.4), 0 0 24px rgb(var(--color-brand-500) / 0.25)",
-        "glow-accent":
-          "0 0 0 1px rgb(var(--color-accent-500) / 0.4), 0 0 24px rgb(var(--color-accent-500) / 0.25)",
-        panel: "0 8px 30px rgba(0,0,0,0.45)",
+        glow: "none",
+        "glow-accent": "none",
+        panel: "0 1px 0 rgb(var(--color-base-700))",
       },
       backgroundImage: {
         "grid-fade":

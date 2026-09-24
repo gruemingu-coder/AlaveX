@@ -1,9 +1,11 @@
 {
-  "name": "alavex-streaming-windows",
+  "name": "alavex-streaming",
   "version": "0.5.0",
   "private": true,
   "scripts": {
     "start": "react-native start",
+    "android": "react-native run-android",
+    "android:apk": "cd android && ./gradlew assembleRelease",
     "windows": "react-native run-windows",
     "lint": "eslint .",
     "postinstall": "node scripts/ensure-windows-native.js"

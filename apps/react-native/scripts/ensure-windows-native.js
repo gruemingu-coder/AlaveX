@@ -18,7 +18,7 @@ if (fs.existsSync(marker)) {
 if (process.platform !== 'win32') {
   console.log(
     '[alavex] Skipping native windows/ scaffold on non-Windows host. Run on Windows:\n' +
-      '  cd apps/windows && npm install && npx react-native-windows-init --overwrite',
+      '  cd apps/react-native && npm install && npx react-native-windows-init --overwrite',
   );
   process.exit(0);
 }

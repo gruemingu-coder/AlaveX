@@ -13,10 +13,8 @@ export function GameCard({ game, selected, onSelect }: GameCardProps) {
       type="button"
       onClick={() => onSelect(game)}
       aria-pressed={selected}
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border text-left transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 ${
-        selected
-          ? "border-brand-400 shadow-glow ring-2 ring-brand-500/50"
-          : "border-base-700 hover:-translate-y-0.5 hover:border-brand-500/50 hover:shadow-glow"
+      className={`group relative flex flex-col overflow-hidden border text-left transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 ${
+        selected ? "border-brand-400 ring-2 ring-brand-500/50" : "border-base-700 hover:border-brand-500"
       }`}
     >
       <div

@@ -14,50 +14,50 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --color-base-950: 7 8 13;
-  --color-base-900: 12 14 22;
-  --color-base-850: 17 20 33;
-  --color-base-800: 22 26 44;
-  --color-base-700: 31 36 56;
-  --color-base-600: 43 49 80;
-  --color-base-500: 58 66 104;
+  --color-base-950: 18 16 13;
+  --color-base-900: 28 24 20;
+  --color-base-850: 36 31 26;
+  --color-base-800: 48 42 35;
+  --color-base-700: 68 59 49;
+  --color-base-600: 96 84 70;
+  --color-base-500: 128 114 96;
 
-  --color-slate-100: 241 245 249;
-  --color-slate-200: 226 232 240;
-  --color-slate-300: 203 213 225;
-  --color-slate-400: 148 163 184;
-  --color-slate-500: 100 116 139;
-  --color-slate-600: 71 85 105;
-  --color-slate-700: 51 65 85;
+  --color-slate-100: 245 236 224;
+  --color-slate-200: 226 214 198;
+  --color-slate-300: 196 180 160;
+  --color-slate-400: 158 142 122;
+  --color-slate-500: 120 106 90;
+  --color-slate-600: 90 78 66;
+  --color-slate-700: 62 54 46;
 
-  --color-brand-50: 241 240 255;
-  --color-brand-100: 228 225 255;
-  --color-brand-200: 201 195 255;
-  --color-brand-300: 169 158 255;
-  --color-brand-400: 139 123 255;
-  --color-brand-500: 116 87 255;
-  --color-brand-600: 98 56 240;
-  --color-brand-700: 79 44 203;
-  --color-brand-800: 63 36 161;
-  --color-brand-900: 51 32 128;
+  --color-brand-50: 255 244 234;
+  --color-brand-100: 255 228 206;
+  --color-brand-200: 244 196 156;
+  --color-brand-300: 232 160 106;
+  --color-brand-400: 217 122 58;
+  --color-brand-500: 196 98 40;
+  --color-brand-600: 168 78 30;
+  --color-brand-700: 138 62 24;
+  --color-brand-800: 104 46 18;
+  --color-brand-900: 72 32 14;
 
-  --color-accent-400: 63 224 197;
-  --color-accent-500: 30 203 176;
-  --color-accent-600: 20 166 147;
+  --color-accent-400: 168 184 140;
+  --color-accent-500: 138 158 108;
+  --color-accent-600: 108 128 82;
 
-  --color-heading: 255 255 255;
+  --color-heading: 250 244 236;
 }
 
 [data-theme="light"] {
   color-scheme: light;
 
-  --color-base-950: 244 245 250;
-  --color-base-900: 255 255 255;
-  --color-base-850: 247 248 252;
-  --color-base-800: 238 240 246;
-  --color-base-700: 221 225 234;
-  --color-base-600: 199 205 219;
-  --color-base-500: 170 178 196;
+  --color-base-950: 244 238 228;
+  --color-base-900: 255 251 245;
+  --color-base-850: 248 242 232;
+  --color-base-800: 236 226 212;
+  --color-base-700: 214 200 180;
+  --color-base-600: 186 168 146;
+  --color-base-500: 154 136 114;
 
   --color-slate-100: 18 20 28;
   --color-slate-200: 31 35 46;
@@ -67,22 +67,22 @@
   --color-slate-600: 163 171 189;
   --color-slate-700: 194 200 214;
 
-  --color-brand-50: 241 240 255;
-  --color-brand-100: 228 225 255;
-  --color-brand-200: 201 195 255;
-  --color-brand-300: 91 63 214;
-  --color-brand-400: 79 44 203;
-  --color-brand-500: 98 56 240;
-  --color-brand-600: 91 47 224;
-  --color-brand-700: 69 32 179;
-  --color-brand-800: 52 24 127;
-  --color-brand-900: 36 16 89;
+  --color-brand-50: 255 244 234;
+  --color-brand-100: 255 228 206;
+  --color-brand-200: 232 176 128;
+  --color-brand-300: 166 78 28;
+  --color-brand-400: 138 62 22;
+  --color-brand-500: 168 78 30;
+  --color-brand-600: 150 68 24;
+  --color-brand-700: 120 52 18;
+  --color-brand-800: 88 38 14;
+  --color-brand-900: 58 24 10;
 
-  --color-accent-400: 14 138 117;
-  --color-accent-500: 12 120 99;
-  --color-accent-600: 10 101 83;
+  --color-accent-400: 78 104 58;
+  --color-accent-500: 64 88 46;
+  --color-accent-600: 52 72 38;
 
-  --color-heading: 17 19 24;
+  --color-heading: 28 22 16;
 }
 
 [data-theme="purple"] {
@@ -162,10 +162,10 @@
 @layer base {
   body {
     @apply bg-base-950 text-slate-100;
-    background-image: radial-gradient(
-      ellipse 80% 60% at 50% -10%,
-      rgb(var(--color-brand-500) / 0.16),
-      transparent 60%
+    background-image: linear-gradient(
+      180deg,
+      rgb(var(--color-brand-500) / 0.07),
+      transparent 220px
     );
     background-attachment: fixed;
     transition: background-color 0.2s ease, color 0.2s ease;

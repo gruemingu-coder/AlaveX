@@ -34,13 +34,26 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-base-950 px-4 py-10">
+    <div className="grid min-h-screen bg-base-950 lg:grid-cols-[minmax(0,0.9fr)_minmax(20rem,28rem)]">
+      <div className="hidden flex-col justify-between border-r border-base-700 px-10 py-10 lg:flex">
+        <Logo size="lg" />
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.18em] text-brand-400">스트리밍 앱</p>
+          <p className="mt-3 max-w-sm text-3xl font-semibold leading-tight text-heading">
+            같은 계정으로
+            <br />
+            Windows와 Mac을 불러옵니다.
+          </p>
+        </div>
+        <p className="text-xs text-slate-500">AlaveX</p>
+      </div>
+      <div className="flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
-        <div className="mb-8 flex justify-center">
+        <div className="mb-8 flex justify-center lg:hidden">
           <Logo size="lg" />
         </div>
 
-        <Card className="p-6">
+        <Card className="border-0 bg-transparent p-0 lg:border lg:bg-base-900 lg:p-6">
           <div className="mb-5 inline-flex w-full rounded-xl border border-base-700 bg-base-900 p-1" role="tablist">
             <button
               type="button"
@@ -125,6 +138,7 @@ export function LoginPage() {
           AlaveX는 독립적인 프로젝트이며 특정 상용 소프트웨어와 무관합니다. 계정은 호스트/스트리밍
           앱을 서로 연결하고 페어링된 PC 목록을 동기화하는 용도로만 사용됩니다.
         </p>
+      </div>
       </div>
     </div>
   );

@@ -1,7 +1,10 @@
 module.exports = {
   project: {
     ios: {},
-    android: {},
+    android: {
+      sourceDir: 'android',
+      packageName: 'org.alavex.streaming',
+    },
     windows: {
       sourceDir: 'windows',
       solutionFile: 'AlaveXStreaming.sln',

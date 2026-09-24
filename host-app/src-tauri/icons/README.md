@@ -1,9 +1,3 @@
-# App icons required before building
+# App icons
 
-Same as the root streaming app: generate real icon files from a square
-source image before running `npm run tauri:build` here.
-
-```powershell
-npm install
-npx tauri icon path\to\alavex-host-logo-1024.png
-```
+`icon.icns`, `icon.ico`, and the PNG sizes are already generated for the AlaveX Host app. A Mac build uses `icon.icns`. A Windows build uses `icon.ico`.

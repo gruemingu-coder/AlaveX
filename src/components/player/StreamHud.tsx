@@ -52,7 +52,7 @@ function HudChip({
   valueClassName?: string;
 }) {
   return (
-    <div className="flex items-center gap-1.5 rounded-lg bg-black/55 px-2.5 py-1.5 backdrop-blur-sm">
+    <div className="flex items-center gap-1.5 border border-white/15 bg-black/70 px-2.5 py-1.5">
       <span className="text-[10px] uppercase tracking-wide text-slate-400">{label}</span>
       <span className={`font-mono text-xs font-semibold text-slate-100 ${valueClassName}`}>
         {value}

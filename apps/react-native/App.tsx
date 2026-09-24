@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {
   Button,
+  Platform,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -16,6 +17,18 @@ import {AlaveXProtocol, connectSignaling, resolveHostAddress} from './src/alavex
 
 const Tab = createBottomTabNavigator();
 
+function clientName(): string {
+  if (Platform.OS === 'android') return 'AlaveX Android';
+  if (Platform.OS === 'windows') return 'AlaveX Windows';
+  return 'AlaveX';
+}
+
+function platformLabel(): string {
+  if (Platform.OS === 'android') return 'Android · React Native';
+  if (Platform.OS === 'windows') return 'Windows · React Native';
+  return 'React Native';
+}
+
 function LoginScreen() {
   const {login, error} = useSession();
   const [email, setEmail] = useState('');
@@ -25,6 +38,7 @@ function LoginScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>AlaveX</Text>
+      <Text style={styles.caption}>{platformLabel()}</Text>
       <TextInput style={styles.input} placeholder="이메일" value={email} onChangeText={setEmail} />
       <TextInput
         style={styles.input}
@@ -72,7 +86,7 @@ function PairingScreen() {
         title="연결 테스트"
         onPress={async () => {
           try {
-            const res = await connectSignaling(address, pin);
+            const res = await connectSignaling(address, pin, clientName());
             setStatus(`${res.hostName} · 게임 ${res.games.length}개`);
           } catch (e) {
             setStatus(e instanceof Error ? e.message : '연결 실패');

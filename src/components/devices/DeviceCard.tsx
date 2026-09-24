@@ -32,7 +32,7 @@ export function DeviceCard({ device, onRemove, onWake, isWaking }: DeviceCardPro
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
           <div
-            className={`relative flex h-11 w-11 items-center justify-center rounded-xl bg-base-800 text-slate-300`}
+            className={`relative flex h-11 w-11 items-center justify-center bg-base-800 text-slate-300`}
             aria-hidden="true"
           >
             <MonitorIcon />

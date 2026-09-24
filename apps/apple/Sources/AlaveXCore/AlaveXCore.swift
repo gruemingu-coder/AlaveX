@@ -76,8 +76,16 @@ public actor AlaveXApiClient {
     private struct DevicesResponse: Codable { let devices: [CloudDevice] }
     private struct ErrorBody: Codable { let error: String? }
 
+    private func endpoint(_ path: String) -> URL {
+        var url = AlaveXProtocol.apiBaseURL
+        for part in path.split(separator: "/") where !part.isEmpty {
+            url.appendPathComponent(String(part))
+        }
+        return url
+    }
+
     private func get<T: Decodable>(_ path: String, token: String) async throws -> T {
-        var req = URLRequest(url: AlaveXProtocol.apiBaseURL.appendingPathComponent(path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))))
+        var req = URLRequest(url: endpoint(path))
         req.httpMethod = "GET"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -85,7 +93,7 @@ public actor AlaveXApiClient {
     }
 
     private func post<T: Decodable>(_ path: String, body: [String: String]) async throws -> T {
-        var req = URLRequest(url: AlaveXProtocol.apiBaseURL.appendingPathComponent(path.trimmingCharacters(in: CharacterSet(charactersIn: "/"))))
+        var req = URLRequest(url: endpoint(path))
         req.httpMethod = "POST"
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try JSONEncoder().encode(body)

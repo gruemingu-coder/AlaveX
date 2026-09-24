@@ -55,7 +55,7 @@ export interface AuthOkMessage {
   hostName: string;
   macAddress?: string | null;
   mediaPort?: number;
-  captureBackend?: "nvenc" | "software";
+  captureBackend?: "nvenc" | "videotoolbox" | "software";
   /** Short-lived UDP media credential (prefer over PIN on the wire). */
   mediaToken?: string | null;
   protocol?: string;
@@ -75,7 +75,7 @@ export interface StartStreamMessage {
 export interface StreamReadyMessage {
   type: "stream-ready";
   mediaPort: number;
-  captureBackend: "nvenc" | "software";
+  captureBackend: "nvenc" | "videotoolbox" | "software";
 }
 
 export interface InputMessage {

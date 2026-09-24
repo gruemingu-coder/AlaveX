@@ -67,9 +67,18 @@ fn path_works(path: &Path) -> bool {
 /// `ffmpeg-master-latest-win64-gpl/bin/ffmpeg.exe` — the exact folder name
 /// can change with each build, so search generically instead of hardcoding
 /// it).
+fn ffmpeg_file_name() -> &'static str {
+    if cfg!(windows) {
+        "ffmpeg.exe"
+    } else {
+        "ffmpeg"
+    }
+}
+
 fn find_cached_binary() -> Option<PathBuf> {
     let dir = app_data_dir();
-    let direct = dir.join("ffmpeg.exe");
+    let name = ffmpeg_file_name();
+    let direct = dir.join(name);
     if direct.is_file() {
         return Some(direct);
     }
@@ -79,7 +88,7 @@ fn find_cached_binary() -> Option<PathBuf> {
         if !path.is_dir() {
             continue;
         }
-        let nested = path.join("bin").join("ffmpeg.exe");
+        let nested = path.join("bin").join(name);
         if nested.is_file() {
             return Some(nested);
         }
@@ -87,17 +96,30 @@ fn find_cached_binary() -> Option<PathBuf> {
     None
 }
 
+fn first_working_ffmpeg() -> PathBuf {
+    let mut candidates = Vec::new();
+    if let Some(cached) = find_cached_binary() {
+        candidates.push(cached);
+    }
+    candidates.push(PathBuf::from("ffmpeg"));
+    #[cfg(target_os = "macos")]
+    {
+        candidates.push(PathBuf::from("/opt/homebrew/bin/ffmpeg"));
+        candidates.push(PathBuf::from("/usr/local/bin/ffmpeg"));
+    }
+    for candidate in candidates {
+        if path_works(&candidate) {
+            return candidate;
+        }
+    }
+    PathBuf::from("ffmpeg")
+}
+
 static RESOLVED: OnceLock<Mutex<PathBuf>> = OnceLock::new();
 
 fn resolved_cell() -> &'static Mutex<PathBuf> {
     RESOLVED.get_or_init(|| {
-        let initial = if path_works(Path::new("ffmpeg")) {
-            PathBuf::from("ffmpeg")
-        } else if let Some(cached) = find_cached_binary() {
-            cached
-        } else {
-            PathBuf::from("ffmpeg")
-        };
+        let initial = first_working_ffmpeg();
         Mutex::new(initial)
     })
 }
@@ -129,6 +151,22 @@ pub fn ensure_ffmpeg_installed(app: tauri::AppHandle) -> Result<String, String> 
         return Ok(path);
     }
 
+    #[cfg(not(windows))]
+    {
+        let message = if cfg!(target_os = "macos") {
+            "ffmpeg를 찾지 못했습니다. 터미널에서 `brew install ffmpeg`를 실행한 뒤 앱을 다시 열어주세요. VideoToolbox(`h264_videotoolbox`)가 포함된 빌드가 필요합니다."
+                .to_string()
+        } else {
+            "이 플랫폼에서는 ffmpeg를 자동으로 설치하지 않습니다.".to_string()
+        };
+        emit(SetupProgress::Error {
+            message: message.clone(),
+        });
+        return Err(message);
+    }
+
+    #[cfg(windows)]
+    {
     let dir = app_data_dir();
     std::fs::create_dir_all(&dir).map_err(|e| format!("폴더 생성 실패: {e}"))?;
     let zip_path = dir.join("ffmpeg-download.zip");
@@ -197,5 +235,6 @@ pub fn ensure_ffmpeg_installed(app: tauri::AppHandle) -> Result<String, String> 
             });
             Err(message)
         }
+    }
     }
 }

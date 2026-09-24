@@ -1,30 +1,15 @@
-# iOS target (LumaLink Streaming)
+# iPhone client
 
-Host remains Windows-only (DXGI). The Streaming client is a Tauri 2 iOS app.
-
-## Requirements
-
-- macOS with Xcode 15+
-- Apple Developer team (device install / TestFlight / App Store)
-- Rust iOS targets: `aarch64-apple-ios`, `aarch64-apple-ios-sim`
-- CocoaPods (Tauri may install as needed)
-
-## Local
+iPhone과 iPad 스트리밍 UI는 SwiftUI입니다. `apps/apple` 를 여세요.
 
 ```bash
-npm install
-npm run tauri:ios:init    # once — generates src-tauri/gen/apple
-npm run tauri:ios:dev     # simulator / device
-npm run tauri:ios:build   # archive / IPA
+cd apps/apple
+brew install xcodegen
+xcodegen generate
+open AlaveX.xcodeproj
+# 스킴 AlaveX-iOS
 ```
 
-Set `APPLE_DEVELOPMENT_TEAM` (or Xcode signing team) before a device build.
+Mac 앱도 같은 패키지입니다 (`swift run AlaveXStreaming` 또는 스킴 `AlaveX-macOS`).
 
-## CI
-
-See `.github/workflows/build-apple.yml` (tag `v*` or `workflow_dispatch`).
-
-## Notes
-
-- Local network permission strings live in `src-tauri/Info.plist` (merged into the Apple bundle).
-- WebCodecs `VideoDecoder` needs a recent WKWebView / iOS 16.4+. Older devices may need a native decode follow-up.
+`npm run tauri:ios:*` 는 영상 디코드가 들어 있는 이전 Tauri 셸입니다. 새 iPhone UI는 SwiftUI 쪽입니다.

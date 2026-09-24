@@ -11,8 +11,8 @@ UI·브랜딩·코드는 이 프로젝트를 위해 새로 작성되었습니다
 | 부분 | 위치 | 설명 |
 | --- | --- | --- |
 | 웹사이트 | `src/` (브라우저 빌드) | 소개·다운로드 전용. `/`와 `/download`만 노출하며, 브라우저에서는 스트리밍 UI에 들어가지 않습니다. |
-| 스트리밍 앱 | `src/` + `src-tauri/` | 같은 React UI를 Tauri로 패키징. **Windows / macOS / Android / iOS**. 계정 로그인, 클라우드 PC 목록, **LLU2 H.264(WebCodecs)**, WOL/LAN 검색. |
-| 호스트 앱 | `host-app/` | Tauri + Rust. **Windows 게이밍 PC 전용**(DXGI). 계정 로그인, PIN, Steam, **NVENC/ffmpeg**, 입력 주입, 트레이, 클라우드 하트비트. MSI 배포. |
+| 스트리밍 앱 | `apps/apple/`, `apps/react-native/`, `src/` + `src-tauri/` | Mac·iPhone은 SwiftUI, Android·Windows는 React Native. 영상(LLU2)은 아직 Tauri 셸. |
+| 호스트 앱 | `host-app/` | Tauri + Rust. **Windows(DXGI/NVENC)와 macOS(ScreenCaptureKit/VideoToolbox)**. 계정 로그인, PIN, Steam, ffmpeg, 입력 주입, 트레이, 클라우드 하트비트. MSI / DMG. |
 
 계정 API는 Cloudflare Pages Functions + D1 (`worker/`, `functions/`, `migrations/`)로
 동작합니다. `functions/api/[[route]].ts`가 `/api/*`를 처리하고, 그 외 경로는 정적 사이트
@@ -32,9 +32,9 @@ UI·브랜딩·코드는 이 프로젝트를 위해 새로 작성되었습니다
 - **호스트 트레이 상주**: 창을 닫아도 트레이에서 계속 실행되며 연결을 받습니다. 완전 종료는
   트레이 메뉴의 "종료".
 - **고FPS 설정**: 최대 500 FPS 목표(실제 값은 모니터·GPU·네트워크에 따라 제한).
-- **DXGI + NVENC**: 호스트는 Windows DXGI 데스크톱 복제로 캡처하고, PATH의 `ffmpeg`로
-  `h264_nvenc`(없으면 `libx264`) 인코딩 후 **자체 UDP(LLU2)** 로 전송합니다.
-  Sunshine/Moonlight 프로토콜과는 무관합니다.
+- **화면 캡처**: Windows는 DXGI + `h264_nvenc`(없으면 `libx264`). macOS는 ScreenCaptureKit +
+  `h264_videotoolbox`(없으면 `libx264`). 둘 다 **자체 UDP(LLU2)** 로 전송합니다.
+  Sunshine/Moonlight 프로토콜과는 무관합니다. macOS ffmpeg는 `brew install ffmpeg`.
 
 ## 화면 구성
 
@@ -54,7 +54,7 @@ UI·브랜딩·코드는 이 프로젝트를 위해 새로 작성되었습니다
 - React 18 + TypeScript + Vite + Tailwind CSS
 - React Router v6 (브라우저: 소개만 / Tauri: 풀 앱 + 로그인 게이트)
 - Cloudflare Pages Functions (Hono) + D1 — 계정·기기 동기화 API
-- DXGI + ffmpeg (`h264_nvenc` / `libx264`) + 자체 UDP 미디어(LLU2: mediaToken/CRC/NACK/PLI/XOR) + WebCodecs 디코드
+- Windows DXGI / macOS ScreenCaptureKit + ffmpeg (`h264_nvenc` / `h264_videotoolbox` / `libx264`) + 자체 UDP 미디어(LLU2: mediaToken/CRC/NACK/PLI/XOR) + WebCodecs 디코드
 - v0.5 보안: PIN은 WebSocket 본문만, URL 금지, 인증 rate-limit, UDP는 mediaToken + payload XOR
 - 호스트 로컬 WebSocket 시그널링 (세션/입력), Tauri 2 — Windows MSI / macOS DMG / Android APK / iOS IPA
 
@@ -95,30 +95,34 @@ Pages → Connect to Git)하면 `git push`할 때마다 자동으로 빌드·배
 `npm run build`, 빌드 출력 디렉터리는 `dist`로 설정하세요. D1 바인딩과 `JWT_SECRET`
 시크릿은 대시보드의 프로젝트 Settings → Functions/Bindings 에서도 등록할 수 있습니다.
 
-네이티브 앱:
+플레이 클라이언트:
 
-```powershell
-# 스트리밍 앱 (Windows)
-npm run tauri:dev
-npm run tauri:build
+```bash
+# Mac (SwiftUI)
+cd apps/apple && swift run AlaveXStreaming
 
-# 스트리밍 · macOS (Mac에서)
-npm run tauri:mac:build
+# iPhone (SwiftUI, Mac + Xcode)
+cd apps/apple && brew install xcodegen && xcodegen generate && open AlaveX.xcodeproj
 
-# 스트리밍 · Android
-npm run tauri:android:init
-npm run tauri:android:build
+# Android (React Native)
+cd apps/react-native && npm install && npm run android
 
-# 스트리밍 · iOS (Mac + Xcode)
-npm run tauri:ios:init
-npm run tauri:ios:build
+# Windows (React Native)
+cd apps/react-native && npm install && npx react-native-windows-init --overwrite && npm run windows
+```
 
-# 호스트 앱 (Windows만)
+호스트 앱 (Windows 또는 macOS, Tauri):
+
+```bash
 cd host-app
 npm install
 npm run tauri:dev
 npm run tauri:build
+# macOS DMG — rustup으로 cargo를 설치한 뒤
+npm run tauri:mac:build
 ```
+
+영상 디코드가 있는 기존 Tauri 스트리밍 셸은 루트에서 `npm run tauri:dev` / `npm run tauri:mac:build` 로 빌드합니다. SwiftUI와 React Native 클라이언트는 로그인·PC 목록·페어링까지입니다.
 
 ## 사용해보기 (실제 흐름)
 
@@ -143,9 +147,10 @@ src/                  웹사이트 + 스트리밍 앱 UI
   utils/              platform (isDesktopApp), cloudDevices, games
 worker/               Cloudflare Worker (Hono) — /api/auth/*, /api/devices
 migrations/           D1 스키마
-src-tauri/            스트리밍 앱 네이티브 (UDP media, WOL, LAN discovery, store)
-  gen/android, gen/ios  모바일 타겟 안내 (init으로 프로젝트 생성)
-host-app/             호스트 앱 Windows (시그널링, Steam, 입력, tray, 하트비트)
+apps/apple/           Mac · iPhone SwiftUI 클라이언트
+apps/react-native/    Android · Windows React Native 클라이언트
+src-tauri/            영상 디코드가 있는 Tauri 스트리밍 셸 (UDP media, WOL)
+host-app/             호스트 앱 Windows / macOS (시그널링, Steam, 입력, tray)
 ```
 
 ### 스트리밍 경로
@@ -187,7 +192,7 @@ iOS 기기 설치·TestFlight는 Apple Developer Team 시크릿(`APPLE_DEVELOPME
 - **LAN 전용 영상 경로**: 시그널링은 암호화되지 않은 `ws://`이며 PIN 인증만 있습니다.
   공용 인터넷에 포트를 열지 마세요. 계정 API만 HTTPS입니다.
 - **NAT 통과 없음**: 같은 Wi-Fi/LAN 밖에서는 실패할 수 있습니다.
-- **Host는 Windows 전용**(DXGI). Mac/Linux 호스트는 없습니다.
+- **Host는 Windows와 macOS**. Linux 호스트는 없습니다. macOS는 화면 기록·손쉬운 사용 권한이 필요하고, 가상 게임패드는 Windows(ViGEmBus)만 지원합니다.
 - **WebCodecs**: Android WebView / iOS WKWebView 버전에 따라 디코드가 안 될 수 있습니다.
 - **이메일 인증/비밀번호 재설정/OAuth**는 아직 없습니다.
 - 앱 아이콘은 `npx tauri icon`으로 생성하세요.

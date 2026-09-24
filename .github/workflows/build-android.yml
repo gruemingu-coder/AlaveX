@@ -1,7 +1,7 @@
 name: Build Android APK (Streaming)
 
-# AlaveX Streaming client APK via Tauri 2 mobile.
-# Host stays Windows-only (DXGI).
+# AlaveX Android streaming client (React Native).
+# Mac and iPhone clients are SwiftUI (apps/apple). Host stays Tauri.
 
 on:
   push:
@@ -15,8 +15,9 @@ permissions:
   contents: write
 
 env:
-  NDK_VERSION: "27.0.12077973"
-  ANDROID_API: "34"
+  NDK_VERSION: "26.1.10909125"
+  ANDROID_API: "35"
+  BUILD_TOOLS: "35.0.0"
 
 jobs:
   android:
@@ -28,14 +29,6 @@ jobs:
         with:
           node-version: 20
 
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
-
-      - uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: src-tauri
-
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -46,85 +39,34 @@ jobs:
 
       - name: Install Android SDK components + NDK
         run: |
-          sdkmanager "platforms;android-${ANDROID_API}" "build-tools;${ANDROID_API}.0.0" "ndk;${NDK_VERSION}"
+          sdkmanager "platforms;android-${ANDROID_API}" "build-tools;${BUILD_TOOLS}" "ndk;${NDK_VERSION}" "cmake;3.22.1"
           echo "NDK_HOME=${ANDROID_HOME}/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
           echo "ANDROID_NDK_HOME=${ANDROID_HOME}/ndk/${NDK_VERSION}" >> "$GITHUB_ENV"
 
-      - name: Install frontend dependencies
+      - name: Install React Native dependencies
+        working-directory: apps/react-native
         run: npm install
 
-      - name: Ensure icons
-        shell: bash
-        run: |
-          if [ ! -f src-tauri/icons/icon.png ]; then
-            python3 - <<'PY'
-          from struct import pack
-          import zlib, pathlib
-          def chunk(t, d):
-              return pack('>I', len(d)) + t + d + pack('>I', zlib.crc32(t + d) & 0xffffffff)
-          raw = b''.join(b'\x00' + bytes([116,87,255])*1024 for _ in range(1024))
-          png = b'\x89PNG\r\n\x1a\n' + chunk(b'IHDR', pack('>IIBBBBB', 1024, 1024, 8, 2, 0, 0, 0))
-          png += chunk(b'IDAT', zlib.compress(raw, 9)) + chunk(b'IEND', b'')
-          pathlib.Path('placeholder.png').write_bytes(png)
-          PY
-            npx tauri icon placeholder.png
-          fi
-
-      - name: Init Android project if missing
-        run: |
-          if [ ! -f src-tauri/gen/android/app/build.gradle.kts ] && [ ! -f src-tauri/gen/android/app/build.gradle ]; then
-            rm -rf src-tauri/gen/android
-            npx tauri android init --ci
-          fi
-        env:
-          CI: true
-          NDK_HOME: ${{ env.NDK_HOME }}
-
-      - name: Build frontend
-        run: npm run build
-
       - name: Build Android APK
+        working-directory: apps/react-native/android
         run: |
           set -o pipefail
-          npx tauri android build --apk -v 2>&1 | tee android-build.log
+          chmod +x ./gradlew
+          ./gradlew assembleRelease --stacktrace 2>&1 | tee "${GITHUB_WORKSPACE}/android-build.log"
         env:
           NDK_HOME: ${{ env.NDK_HOME }}
           JAVA_HOME: ${{ env.JAVA_HOME }}
 
-      - name: Sign APK (required for sideload install)
+      - name: Collect release APK
         run: |
           set -euo pipefail
-          BUILD_TOOLS="${ANDROID_HOME}/build-tools/${ANDROID_API}.0.0"
-          echo "Looking for APK under src-tauri/gen/android ..."
-          find src-tauri/gen/android -name '*.apk' -ls || true
-          UNSIGNED=$(find src-tauri/gen/android/app/build/outputs/apk -name '*unsigned*.apk' 2>/dev/null | head -n1 || true)
-          if [ -z "${UNSIGNED:-}" ]; then
-            UNSIGNED=$(find src-tauri/gen/android/app/build/outputs/apk -path '*release*' -name '*.apk' 2>/dev/null | head -n1 || true)
-          fi
-          if [ -z "${UNSIGNED:-}" ] || [ ! -f "$UNSIGNED" ]; then
-            echo "No APK found to sign"
+          APK=$(find apps/react-native/android/app/build/outputs/apk/release -name '*.apk' | head -n1)
+          if [ -z "${APK:-}" ] || [ ! -f "$APK" ]; then
+            echo "No release APK found"
             exit 1
           fi
-          echo "Signing $UNSIGNED"
-          ALIGNED="${RUNNER_TEMP}/alavex-aligned.apk"
-          SIGNED="${RUNNER_TEMP}/alavex-signed.apk"
-          "$BUILD_TOOLS/zipalign" -f -p 4 "$UNSIGNED" "$ALIGNED"
-          KEYSTORE="${RUNNER_TEMP}/alavex-release.keystore"
-          keytool -genkeypair -v \
-            -keystore "$KEYSTORE" \
-            -storepass alavex \
-            -alias alavex \
-            -keypass alavex \
-            -keyalg RSA -keysize 2048 -validity 10000 \
-            -dname "CN=AlaveX"
-          "$BUILD_TOOLS/apksigner" sign \
-            --ks "$KEYSTORE" \
-            --ks-pass pass:alavex \
-            --key-pass pass:alavex \
-            --out "$SIGNED" "$ALIGNED"
-          "$BUILD_TOOLS/apksigner" verify --verbose "$SIGNED"
           mkdir -p releases
-          cp "$SIGNED" releases/AlaveX-Streaming.apk
+          cp "$APK" releases/AlaveX-Streaming.apk
 
       - name: Upload build log on failure
         if: failure()
@@ -138,9 +80,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: alavex-android-apk
-          path: |
-            releases/AlaveX-Streaming.apk
-            src-tauri/gen/android/**/apk/**/*.apk
+          path: releases/AlaveX-Streaming.apk
           if-no-files-found: error
 
   publish-apk-to-site:

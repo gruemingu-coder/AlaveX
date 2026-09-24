@@ -1,7 +1,8 @@
-//! Host audio: ffmpeg WASAPI loopback → AAC ADTS → LLU2 TYPE_AUDIO.
+//! Host audio → AAC ADTS → LLU2 TYPE_AUDIO.
 //!
-//! Falls back silently if ffmpeg/WASAPI loopback is unavailable so video
-//! streaming never depends on audio success.
+//! Windows uses ffmpeg WASAPI loopback. macOS uses ffmpeg avfoundation
+//! (device index; system loopback depends on the installed ffmpeg build).
+//! Falls back silently so video streaming never depends on audio success.
 
 use std::io::Read;
 use std::process::{Child, ChildStdout, Command, Stdio};
@@ -29,18 +30,34 @@ pub struct AudioCapture {
 impl AudioCapture {
     /// Best-effort start. Returns `None` when no capture device/encoder works.
     pub fn try_start() -> Option<Self> {
-        for device in ["loopback", "default"] {
-            if let Ok(cap) = Self::spawn_wasapi(device) {
-                eprintln!("AlaveX audio: WASAPI `{device}` + aac ready");
-                return Some(cap);
+        #[cfg(windows)]
+        {
+            for device in ["loopback", "default"] {
+                if let Ok(cap) = Self::spawn(device, "wasapi") {
+                    eprintln!("AlaveX audio: WASAPI `{device}` + aac ready");
+                    return Some(cap);
+                }
             }
+            eprintln!("AlaveX audio: WASAPI unavailable — video-only stream");
+            return None;
         }
-        eprintln!("AlaveX audio: WASAPI unavailable — video-only stream");
+        #[cfg(target_os = "macos")]
+        {
+            for device in [":0", "none:0", ":1"] {
+                if let Ok(cap) = Self::spawn(device, "avfoundation") {
+                    eprintln!("AlaveX audio: avfoundation `{device}` + aac ready");
+                    return Some(cap);
+                }
+            }
+            eprintln!("AlaveX audio: avfoundation unavailable — video-only stream");
+            return None;
+        }
+        #[allow(unreachable_code)]
         None
     }
 
-    fn spawn_wasapi(device: &str) -> Result<Self, String> {
-        let mut cmd = Command::new("ffmpeg");
+    fn spawn(device: &str, format: &str) -> Result<Self, String> {
+        let mut cmd = Command::new(crate::ffmpeg_setup::ffmpeg_path());
         #[cfg(windows)]
         {
             cmd.creation_flags(CREATE_NO_WINDOW);
@@ -51,7 +68,7 @@ impl AudioCapture {
                 "-loglevel",
                 "error",
                 "-f",
-                "wasapi",
+                format,
                 "-i",
                 device,
                 "-ac",

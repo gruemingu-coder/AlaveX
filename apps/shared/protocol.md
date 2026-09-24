@@ -1,6 +1,6 @@
 # AlaveX native client protocol (shared)
 
-All native streaming clients (SwiftUI, Compose, React Native Windows) implement the same wire protocol as `src/services/streaming/signalingProtocol.ts`.
+Native streaming clients use SwiftUI on Mac and iPhone (`apps/apple`) and React Native on Android and Windows (`apps/react-native`). They follow the same wire protocol as `src/services/streaming/signalingProtocol.ts`.
 
 ## Ports (Sunshine-compatible)
 
@@ -34,4 +34,4 @@ Base URL: `https://alavex.pages.dev/api`
 
 ## Host app
 
-Windows Host stays in `host-app/` (Rust + DXGI). Not part of this `apps/` tree.
+The host stays in `host-app/` (Rust). Windows captures with DXGI, macOS with ScreenCaptureKit. Not part of this `apps/` tree.

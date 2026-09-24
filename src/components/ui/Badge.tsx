@@ -20,7 +20,7 @@ interface BadgeProps {
 export function Badge({ tone = "neutral", children, icon, className = "" }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${toneClasses[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.12em] ${toneClasses[tone]} ${className}`}
     >
       {icon}
       {children}
