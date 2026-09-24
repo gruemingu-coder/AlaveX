@@ -15,8 +15,7 @@ const HOST_WIN_URL = "/downloads/AlaveX-Host-Setup.msi";
 const HOST_MAC_URL = "/downloads/AlaveX-Host-macOS.dmg";
 const STREAMING_WIN_URL = "/downloads/AlaveX-Streaming-Setup.msi";
 const STREAMING_MAC_URL = "/downloads/AlaveX-Streaming-macOS.dmg";
-const STREAMING_ANDROID_URL =
-  "https://raw.githubusercontent.com/gruemingu-coder/lumalink/main/releases/AlaveX-Streaming.apk";
+const STREAMING_ANDROID_URL = "/downloads/AlaveX-Streaming.apk";
 
 const HOSTS = [
   {
