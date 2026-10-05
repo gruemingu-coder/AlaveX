@@ -10,6 +10,8 @@
 	<string>1</string>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>같은 Wi-Fi의 AlaveX 호스트에 연결해 화면을 받습니다.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

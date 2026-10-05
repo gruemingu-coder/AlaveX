@@ -68,6 +68,15 @@ final class SessionStore: ObservableObject {
     @Published var draftHost = ""
     @Published var draftPin = ""
     @Published var section: AppSection = .devices
+    @Published var streamHost: String?
+    @Published var streamPin: String?
+
+    func play(host: String, pin: String) {
+        let address = host.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !address.isEmpty, pin.count >= 4 else { return }
+        streamHost = address
+        streamPin = pin
+    }
 
     var isLoggedIn: Bool { token != nil }
 
@@ -133,12 +142,39 @@ struct RootView: View {
             }
         }
         .background(AlaveXTheme.ink)
+        .streamCover(isPresented: streamPresented) {
+            if let host = session.streamHost, let pin = session.streamPin {
+                StreamPlayerView(host: host, pin: pin)
+            }
+        }
         .task {
             if let token = session.token {
                 session.user = try? await AlaveXApiClient.shared.fetchMe(token: token)
                 await session.refreshDevices()
             }
         }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func streamCover<Cover: View>(isPresented: Binding<Bool>, @ViewBuilder content: @escaping () -> Cover) -> some View {
+        #if os(iOS)
+        self.fullScreenCover(isPresented: isPresented, content: content)
+        #else
+        self.sheet(isPresented: isPresented) {
+            content().frame(minWidth: 960, minHeight: 540)
+        }
+        #endif
+    }
+}
+
+private extension RootView {
+    var streamPresented: Binding<Bool> {
+        Binding(
+            get: { session.streamHost != nil },
+            set: { if !$0 { session.streamHost = nil; session.streamPin = nil } }
+        )
     }
 }
 
@@ -250,6 +286,7 @@ struct LoginView: View {
 
 struct DevicesView: View {
     @EnvironmentObject private var session: SessionStore
+    @State private var pins: [String: String] = [:]
 
     var body: some View {
         List {
@@ -259,14 +296,27 @@ struct DevicesView: View {
                     .foregroundStyle(AlaveXTheme.muted)
             }
             ForEach(session.devices) { device in
-                VStack(alignment: .leading, spacing: 6) {
+                let address = session.hostAddress(for: device)
+                let pin = pins[device.id] ?? device.pairingPin ?? ""
+                VStack(alignment: .leading, spacing: 8) {
                     Text(device.name)
                         .font(.headline)
                         .foregroundStyle(AlaveXTheme.text)
-                    Text(session.hostAddress(for: device))
+                    Text(address.isEmpty ? "주소 없음" : address)
                         .font(.caption)
                         .foregroundStyle(AlaveXTheme.muted)
-                    Button("이 PC에 연결") {
+                    TextField("호스트 PIN", text: Binding(
+                        get: { pin },
+                        set: { pins[device.id] = $0 }
+                    ))
+                    #if os(iOS)
+                    .keyboardType(.numberPad)
+                    #endif
+                    Button("플레이") {
+                        session.play(host: address, pin: pin)
+                    }
+                    .disabled(address.isEmpty || pin.count < 4)
+                    Button("페어링에 넣기") {
                         session.preparePairing(for: device)
                     }
                     .font(.caption)
@@ -300,6 +350,10 @@ struct PairingView: View {
                 TextField("PIN (4자리)", text: $session.draftPin)
             }
             Section {
+                Button("플레이") {
+                    session.play(host: session.draftHost, pin: session.draftPin)
+                }
+                .disabled(session.draftHost.isEmpty || session.draftPin.count < 4)
                 Button(busy ? "연결 중…" : "연결 테스트") {
                     Task { await testConnection() }
                 }

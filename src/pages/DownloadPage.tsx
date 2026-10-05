@@ -84,10 +84,10 @@ const CLIENTS = [
     stack: "SwiftUI",
     format: "IPA",
     name: "Streaming · iOS",
-    hint: "apps/apple · Xcode 스킴 AlaveX-iOS",
+    hint: "SwiftUI. 영상·터치·게임패드 플레이. Xcode 스킴 AlaveX-iOS",
     url: null as string | null,
     fileName: "GitHub Actions → alavex-ios",
-    missing: "iPhone은 apps/apple에서 Xcode 스킴 AlaveX-iOS로 빌드합니다. Apple 서명이 필요합니다.",
+    missing: "iPhone 앱은 apps/apple의 Xcode 스킴 AlaveX-iOS입니다. Apple 서명으로 폰에 설치하면 호스트 화면을 재생합니다. 사이트용 IPA는 없습니다.",
   },
 ] as const;
 

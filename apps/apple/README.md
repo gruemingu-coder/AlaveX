@@ -2,7 +2,7 @@
 
 Mac과 iPhone(iPad) 스트리밍 클라이언트입니다. Android와 Windows는 React Native (`apps/react-native`)입니다.
 
-로그인, 클라우드 PC 목록, PIN 시그널링 테스트까지 동작합니다. LLU2 영상 디코드는 아직 없습니다.
+iPhone과 Mac에서 로그인 후 PIN으로 바로 플레이합니다. 영상은 VideoToolbox H.264, 소리는 AAC, 터치와 게임패드는 호스트로 전달됩니다. 목표 프레임은 120 FPS입니다. App Store 파일이 없어서 iPhone에는 Xcode로 설치합니다.
 
 요구 사항: Xcode 15+, macOS 13+, iOS 16+.
 
