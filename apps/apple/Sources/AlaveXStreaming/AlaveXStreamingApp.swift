@@ -34,7 +34,7 @@ struct AlaveXStreamingApp: App {
     }
 }
 
-private enum AppSection: String, CaseIterable, Identifiable, Hashable {
+enum AppSection: String, CaseIterable, Identifiable, Hashable {
     case devices
     case pairing
     case settings
